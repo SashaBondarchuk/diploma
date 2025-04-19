@@ -1,0 +1,6 @@
+﻿namespace Employee.Performance.Evaluator.Core.Entities.Abstractions;
+
+public class BaseEntity
+{
+    public int Id { get; set; }
+}

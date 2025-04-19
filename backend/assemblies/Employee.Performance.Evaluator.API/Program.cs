@@ -1,3 +1,7 @@
+﻿
+using Employee.Performance.Evaluator.API.Extensions;
+using Employee.Performance.Evaluator.API.Middlewares;
+using System.Text.Json.Serialization;
 
 namespace Employee.Performance.Evaluator.API;
 
@@ -7,10 +11,18 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        // Add services to the container.
+        builder.Services.AddServices(builder.Configuration);
+        builder.Services.AddAppDbContext(builder.Configuration);
+        builder.Services.AddInfrastructureServices(builder.Configuration);
 
-        builder.Services.AddControllers();
-        // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+        builder.Services.AddControllers().AddJsonOptions(options =>
+        {
+            options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+            options.JsonSerializerOptions.WriteIndented = true;
+        });
+
+        builder.Services.AddCors();
+
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
 
@@ -23,10 +35,19 @@ public class Program
             app.UseSwaggerUI();
         }
 
+        app.UseCors(opt => opt
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowAnyOrigin());
+
         app.UseHttpsRedirection();
 
+        app.UseAuthentication();
         app.UseAuthorization();
 
+        app.UseAppDbContext();
+
+        app.UseMiddleware<UserSaverMiddleware>();
 
         app.MapControllers();
 
