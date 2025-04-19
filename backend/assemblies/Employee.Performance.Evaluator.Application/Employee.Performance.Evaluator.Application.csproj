@@ -10,4 +10,9 @@
     <ProjectReference Include="..\Employee.Performance.Evaluator.Core\Employee.Performance.Evaluator.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="RequestsAndResponses\Employees\" />
+    <Folder Include="RequestsAndResponses\Users\" />
+  </ItemGroup>
+
 </Project>
