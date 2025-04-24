@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
-using System.Security.Claims;
 
 namespace Employee.Performance.Evaluator.Infrastructure.Auth;
 
@@ -13,8 +13,10 @@ public class PermissionAuthorizationHandler(ILogger<PermissionAuthorizationHandl
 
         if (!int.TryParse(userId, out int id))
         {
-            logger.LogWarning("User ID claim is missing or invalid. User ID: {UserId}", userId);
+            logger.LogWarning("UserId claim is missing or invalid. User Id={UserId}", userId);
             context.Fail();
+
+            return Task.CompletedTask;
         }
 
         var userPermissions = context.User.Claims
@@ -28,7 +30,7 @@ public class PermissionAuthorizationHandler(ILogger<PermissionAuthorizationHandl
         }
         else
         {
-            logger.LogWarning("User with ID {UserId} does not have permission {Permission} to access this resource.",
+            logger.LogWarning("User with Id={UserId} does not have permission {Permission} to access this resource.",
                 id, requirement.Permission);
 
             context.Fail();

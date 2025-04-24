@@ -1,4 +1,5 @@
-﻿using Employee.Performance.Evaluator.Application.Abstractions;
+﻿using System.Net;
+using Employee.Performance.Evaluator.Application.Abstractions.Auth;
 using Employee.Performance.Evaluator.Application.RequestsAndResponses.Auth;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,10 +9,12 @@ namespace Employee.Performance.Evaluator.API.Controllers;
 [ApiController]
 public class AuthController(
     IAuthService authService,
-    IUserGetter userGetter,
     ILogger<AuthController> logger) : ControllerBase
 {
     [HttpPost("login")]
+    [ProducesResponseType(typeof(AuthResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Login([FromBody] LoginRequest request, CancellationToken cancellationToken)
     {
         try
@@ -19,14 +22,22 @@ public class AuthController(
             var response = await authService.LoginAsync(request, cancellationToken);
             return Ok(response);
         }
+        catch (Exception ex) when (ex is UnauthorizedAccessException)
+        {
+            logger.LogError(ex, "Login failed for user {Email}", request.Email);
+            return BadRequest(ex.Message);
+        }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Login failed for user {Username}", request.Username);
-            return BadRequest(ex.Message);
+            logger.LogError("Failed to login due to an unexpected error: {Message}", ex.Message);
+            return StatusCode((int)HttpStatusCode.InternalServerError, ex);
         }
     }
 
     [HttpPost("register")]
+    [ProducesResponseType(typeof(AuthResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Register([FromBody] RegisterRequest request, CancellationToken cancellationToken)
     {
         try
@@ -34,25 +45,15 @@ public class AuthController(
             var response = await authService.RegisterAsync(request, cancellationToken);
             return Ok(response);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is InvalidOperationException)
         {
-            logger.LogError(ex, "Registration failed for user {Username}", request.Username);
+            logger.LogError(ex, "Registration failed for user {Email}", request.Email);
             return BadRequest(ex.Message);
         }
-    }
-
-    [HttpGet("users/me")]
-    public Task<IActionResult> GetCurrentUser()
-    {
-        try
-        {
-            var user = userGetter.GetCurrentUserOrThrow();
-            return Task.FromResult<IActionResult>(Ok(user));
-        }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Failed to get current user");
-            return Task.FromResult<IActionResult>(BadRequest(ex.Message));
+            logger.LogError("Failed to register due to an unexpected error: {Message}", ex.Message);
+            return StatusCode((int)HttpStatusCode.InternalServerError, ex);
         }
     }
 }

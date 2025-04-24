@@ -1,4 +1,4 @@
-﻿using Employee.Performance.Evaluator.Application.Abstractions;
+﻿using Employee.Performance.Evaluator.Application.Abstractions.Auth;
 using Employee.Performance.Evaluator.Application.Abstractions.Repositories;
 using Employee.Performance.Evaluator.Application.RequestsAndResponses.Auth;
 using Employee.Performance.Evaluator.Core.Entities;
@@ -13,15 +13,15 @@ public class AuthService(
 {
     public async Task<AuthResponse> RegisterAsync(RegisterRequest request, CancellationToken cancellationToken)
     {
-        var userExists = (await usersRepository.GetAllAsync(cancellationToken)).Any(u => u.Email == request.Username);
+        var userExists = (await usersRepository.GetAllAsync(cancellationToken)).Any(u => u.Email == request.Email);
         if (userExists)
         {
-            throw new InvalidOperationException("Username is taken by other user.");
+            throw new InvalidOperationException("Email is taken by other user.");
         }
 
         var user = new User
         {
-            Email = request.Username,
+            Email = request.Email,
             RoleId = (int)UserRole.Unassigned,
             PasswordHash = passwordHasher.HashPassword(request.Password)
         };
@@ -36,16 +36,16 @@ public class AuthService(
 
     public async Task<AuthResponse> LoginAsync(LoginRequest request, CancellationToken cancellationToken)
     {
-        var user = (await usersRepository.GetAllAsync(cancellationToken)).FirstOrDefault(u => u.Email == request.Username);
+        var user = (await usersRepository.GetAllAsync(cancellationToken)).FirstOrDefault(u => u.Email == request.Email);
         if (user == null)
         {
-            throw new UnauthorizedAccessException("Username or password is incorrect.");
+            throw new UnauthorizedAccessException("Email or password is incorrect.");
         }
 
         var isValidPassword = passwordHasher.VerifyPassword(user.PasswordHash, request.Password);
         if (!isValidPassword)
         {
-            throw new UnauthorizedAccessException("Username or password is incorrect.");
+            throw new UnauthorizedAccessException("Email or password is incorrect.");
         }
 
         var token = await jwtProvider.GenerateTokenAsync(user, cancellationToken);

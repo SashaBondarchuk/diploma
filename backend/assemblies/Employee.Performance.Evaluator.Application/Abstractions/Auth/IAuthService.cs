@@ -1,6 +1,6 @@
 ﻿using Employee.Performance.Evaluator.Application.RequestsAndResponses.Auth;
 
-namespace Employee.Performance.Evaluator.Application.Abstractions;
+namespace Employee.Performance.Evaluator.Application.Abstractions.Auth;
 
 public interface IAuthService
 {

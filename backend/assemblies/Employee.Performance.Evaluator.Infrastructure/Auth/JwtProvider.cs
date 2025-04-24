@@ -1,4 +1,4 @@
-﻿using Employee.Performance.Evaluator.Application.Abstractions;
+﻿using Employee.Performance.Evaluator.Application.Abstractions.Auth;
 using Employee.Performance.Evaluator.Application.Abstractions.Repositories;
 using Employee.Performance.Evaluator.Core.Entities;
 using Microsoft.Extensions.Options;

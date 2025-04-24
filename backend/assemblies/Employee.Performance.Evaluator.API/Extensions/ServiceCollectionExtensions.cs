@@ -1,4 +1,6 @@
-﻿using Employee.Performance.Evaluator.Application.Abstractions;
+﻿using System.Text;
+using Employee.Performance.Evaluator.Application.Abstractions;
+using Employee.Performance.Evaluator.Application.Abstractions.Auth;
 using Employee.Performance.Evaluator.Application.Abstractions.Repositories;
 using Employee.Performance.Evaluator.Application.Implementations;
 using Employee.Performance.Evaluator.Infrastructure.Auth;
@@ -8,7 +10,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
 
 namespace Employee.Performance.Evaluator.API.Extensions;
 
@@ -19,6 +20,9 @@ public static class ServiceCollectionExtensions
         services.AddScoped<UserStorage>();
         services.AddTransient<IUserIdSetter>(s => s.GetService<UserStorage>()!);
         services.AddTransient<IUserGetter>(s => s.GetService<UserStorage>()!);
+
+        services.AddTransient<IEmployeeService, EmployeesService>();
+        services.AddTransient<ITeamsService, TeamsService>();
     }
 
     public static void AddAppDbContext(this IServiceCollection services, IConfiguration configuration)
@@ -35,6 +39,7 @@ public static class ServiceCollectionExtensions
 
         services.AddTransient<IEmployeeRepository, EmployeeRepository>();
         services.AddTransient<IUsersRepository, UsersRepository>();
+        services.AddTransient<ITeamsRepository, TeamsRepository>();
     }
 
     private static void AddAuthServices(this IServiceCollection services, IConfiguration configuration)

@@ -19,7 +19,8 @@ public static class ModelBuilderExtensions
 
             entity.HasOne(e => e.Role)
                   .WithMany()
-                  .HasForeignKey(e => e.RoleId);
+                  .HasForeignKey(e => e.RoleId)
+                  .OnDelete(DeleteBehavior.Restrict);
         });
 
         modelBuilder.Entity<EmployeeEntity>(entity =>
@@ -38,7 +39,7 @@ public static class ModelBuilderExtensions
                   .OnDelete(DeleteBehavior.Restrict);
 
             entity.HasOne(e => e.Team)
-                  .WithMany()
+                  .WithMany(e => e.Employees)
                   .HasForeignKey(e => e.TeamId)
                   .OnDelete(DeleteBehavior.Restrict);
         });
@@ -157,7 +158,8 @@ public static class ModelBuilderExtensions
 
     public static void Seed(this ModelBuilder modelBuilder)
     {
-        Randomizer.Seed = new Random(8675309);
+        var seed = 8675309;
+        var now = new DateTime(2025, 01, 01);
 
         var roles = new[]
         {
@@ -229,6 +231,7 @@ public static class ModelBuilderExtensions
         modelBuilder.Entity<KPIMetric>().HasData(kpiMetrics);
 
         var roleKPIs = new Faker<RoleKPI>()
+            .UseSeed(seed)
             .RuleFor(rk => rk.RoleId, f => f.PickRandom(roles).Id)
             .RuleFor(rk => rk.KpiId, f => f.PickRandom(kpiMetrics).Id)
             .RuleFor(rk => rk.Weight, f => f.Random.Decimal(5, 20))
@@ -320,6 +323,7 @@ public static class ModelBuilderExtensions
         modelBuilder.Entity<EmployeeClass>().HasData(employeeClasses);
 
         var users = new Faker<User>()
+            .UseSeed(seed)
             .RuleFor(u => u.Id, f => f.IndexFaker + 1)
             .RuleFor(e => e.Email, f => f.Internet.Email())
             .RuleFor(u => u.PasswordHash, f => f.Internet.Password())
@@ -329,6 +333,7 @@ public static class ModelBuilderExtensions
         modelBuilder.Entity<User>().HasData(users);
 
         var teams = new Faker<Team>()
+            .UseSeed(seed)
             .RuleFor(t => t.Id, f => f.IndexFaker + 1)
             .RuleFor(t => t.Name, f => f.Commerce.Department())
             .RuleFor(t => t.TeamLeadId, _ => null)
@@ -337,28 +342,28 @@ public static class ModelBuilderExtensions
         modelBuilder.Entity<Team>().HasData(teams);
 
         var employees = new Faker<EmployeeEntity>()
+            .UseSeed(seed)
             .RuleFor(e => e.Id, f => f.IndexFaker + 1)
             .RuleFor(e => e.UserId, (f, e) => users[e.Id - 1].Id)
             .RuleFor(e => e.FirstName, f => f.Name.FirstName())
             .RuleFor(e => e.LastName, f => f.Name.LastName())
             .RuleFor(e => e.PhoneNumber, f => f.Phone.PhoneNumber())
-            .RuleFor(e => e.BirthDate, f => f.Date.Past(40, DateTime.Now.AddYears(-18)))
+            .RuleFor(e => e.BirthDate, f => f.Date.Past(40, now.AddYears(-18)))
+            .RuleFor(e => e.HireDate, f => f.Date.Past(5, now))
             .RuleFor(e => e.TeamId, f => f.PickRandom(teams).Id)
             .RuleFor(e => e.Avatar, f => f.Image.Random.Bytes(1000))
-            .RuleFor(e => e.HireDate, f => f.Date.Past(5))
             .Generate(20);
 
         modelBuilder.Entity<EmployeeEntity>().HasData(employees);
 
         var evaluationSessions = new Faker<EvaluationSession>()
+            .UseSeed(seed)
             .RuleFor(es => es.Id, f => f.IndexFaker + 1)
             .RuleFor(es => es.EmployeeId, f => f.PickRandom(employees).Id)
             .RuleFor(es => es.ClassId, f => f.PickRandom(employeeClasses).Id)
-            .RuleFor(es => es.StartDate, f => f.Date.Past(3))
-            .RuleFor(es => es.EndDate, f => f.Date.Past(1))
-            .RuleFor(es => es.StartDate, f => f.Date.Past(3))
-            .RuleFor(es => es.EndDate, f => f.Date.Past(1))
-            .RuleFor(es => es.EvaluationFinishedDate, f => f.Date.Past(2))
+            .RuleFor(es => es.StartDate, f => f.Date.Past(3, now))
+            .RuleFor(es => es.EndDate, f => f.Date.Past(1, now))
+            .RuleFor(es => es.EvaluationFinishedDate, f => f.Date.Past(2, now))
             .Generate(10);
 
         modelBuilder.Entity<EvaluationSession>().HasData(evaluationSessions);
@@ -367,19 +372,20 @@ public static class ModelBuilderExtensions
         int evaluationId = 1;
         foreach (var session in evaluationSessions)
         {
-            var numMetrics = new Random().Next(2, 5);
-            var selectedRoleKPIs = roleKPIs.OrderBy(x => Guid.NewGuid()).Take(numMetrics).ToList();
+            var numMetrics = new Random(seed).Next(2, 5);
+            var randomOrderSelector = new Random(seed).Next(0, 2) == 0 ? "Weight" : "KpiId";
+            var selectedRoleKPIs = roleKPIs.OrderBy(x => randomOrderSelector).Take(numMetrics).ToList();
             foreach (var roleKPI in selectedRoleKPIs)
             {
                 evaluations.Add(new Evaluation
                 {
                     Id = evaluationId++,
                     EvaluationSessionId = session.Id,
-                    EvaluatorId = employees[new Random().Next(1, employees.Count)].Id,
+                    EvaluatorId = employees[new Random(seed).Next(1, employees.Count)].Id,
                     KpiId = roleKPI.KpiId,
                     RoleId = roleKPI.RoleId,
-                    Score = new Random().Next(1, 6),
-                    Comment = new Faker().Lorem.Sentence()
+                    Score = new Random(seed).Next(1, 6),
+                    Comment = "Some comment lorem ipsum dolor amet",
                 });
             }
         }
@@ -387,10 +393,11 @@ public static class ModelBuilderExtensions
         modelBuilder.Entity<Evaluation>().HasData(evaluations);
 
         var recommendations = new Faker<Recommendation>()
+            .UseSeed(seed)
             .RuleFor(r => r.Id, f => f.IndexFaker + 1)
             .RuleFor(r => r.EmployeeId, f => f.PickRandom(employees).Id)
             .RuleFor(r => r.RecommendationText, f => f.Lorem.Paragraph())
-            .RuleFor(r => r.CreatedAt, f => f.Date.Past(1))
+            .RuleFor(r => r.CreatedAt, f => f.Date.Past(1, now))
             .Generate(10);
 
         modelBuilder.Entity<Recommendation>().HasData(recommendations);

@@ -1,4 +1,4 @@
-﻿namespace Employee.Performance.Evaluator.Application.Abstractions;
+﻿namespace Employee.Performance.Evaluator.Application.Abstractions.Auth;
 
 public interface IPasswordHasher
 {

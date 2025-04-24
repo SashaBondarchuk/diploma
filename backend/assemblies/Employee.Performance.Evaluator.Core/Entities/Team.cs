@@ -8,4 +8,5 @@ public class Team : BaseEntity
     public int? TeamLeadId { get; set; }
 
     public Employee? TeamLead { get; set; }
+    public ICollection<Employee>? Employees { get; set; }
 }

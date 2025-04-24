@@ -1,7 +1,5 @@
-﻿
-using Employee.Performance.Evaluator.API.Extensions;
+﻿using Employee.Performance.Evaluator.API.Extensions;
 using Employee.Performance.Evaluator.API.Middlewares;
-using System.Text.Json.Serialization;
 
 namespace Employee.Performance.Evaluator.API;
 
@@ -17,7 +15,6 @@ public class Program
 
         builder.Services.AddControllers().AddJsonOptions(options =>
         {
-            options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
             options.JsonSerializerOptions.WriteIndented = true;
         });
 
