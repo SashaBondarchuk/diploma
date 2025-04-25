@@ -5,7 +5,6 @@ using Employee.Performance.Evaluator.Core.Enums;
 using Employee.Performance.Evaluator.Core.Exceptions;
 using Employee.Performance.Evaluator.Infrastructure.Auth;
 using Microsoft.AspNetCore.Mvc;
-using EmployeeEntity = Employee.Performance.Evaluator.Core.Entities.Employee;
 
 namespace Employee.Performance.Evaluator.API.Controllers;
 
@@ -28,12 +27,12 @@ public class EmployeesController(
             var employees = await employeeService.GetEmployeesAsync(cancellationToken);
 
             if (employees == null || employees.Count == 0)
-        {
-            return NotFound("No employees found.");
-        }
+            {
+                return NotFound("No employees found.");
+            }
 
-        return Ok(employees);
-    }
+            return Ok(employees);
+        }
         catch (Exception ex)
         {
             logger.LogError(ex, "Failed to get employees due to an unexpected error");
@@ -52,13 +51,13 @@ public class EmployeesController(
         {
             var employee = await employeeService.GetByIdAsync(id, cancellationToken);
 
-        if (employee == null)
-        {
+            if (employee == null)
+            {
                 return NotFound($"No employee with Id={id} found.");
-        }
+            }
 
             return Ok(employee);
-    }
+        }
         catch (Exception ex)
         {
             logger.LogError(ex, "Failed to get employee with Id={Id} due to an unexpected error", id);
@@ -80,9 +79,9 @@ public class EmployeesController(
             var employee = await employeeService.GetByUserIdAsync(userId, cancellationToken);
 
             if (employee == null)
-        {
+            {
                 return NotFound($"Employee with Id={userId} not found.");
-        }
+            }
 
             return Ok(employee);
         }
@@ -114,9 +113,9 @@ public class EmployeesController(
         {
             var createdEmployee = await employeeService.CreateAsync(employee, cancellationToken);
             return CreatedAtAction(nameof(Create), new { id = createdEmployee.Id }, createdEmployee);
-    }
+        }
         catch (InvalidOperationException ex)
-    {
+        {
             logger.LogError(ex, "Failed to create employee");
             return BadRequest(ex.Message);
         }
@@ -134,10 +133,10 @@ public class EmployeesController(
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Update(int id, [FromBody] AddUpdateEmployeeRequest employee, CancellationToken cancellationToken)
     {
-            if (employee == null)
-            {
+        if (employee == null)
+        {
             return BadRequest("Employee data is required.");
-            }
+        }
 
         try
         {

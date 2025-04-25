@@ -1,5 +1,5 @@
-﻿using Employee.Performance.Evaluator.Application.Abstractions;
-using System.Security.Claims;
+﻿using System.Security.Claims;
+using Employee.Performance.Evaluator.Application.Abstractions;
 
 namespace Employee.Performance.Evaluator.API.Middlewares;
 

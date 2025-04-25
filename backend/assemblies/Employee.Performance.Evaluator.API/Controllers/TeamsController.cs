@@ -27,7 +27,7 @@ public class TeamsController(
             if (teams == null || teams.Count == 0)
             {
                 return NotFound("No teams found.");
-        }
+            }
 
             return Ok(teams);
         }
@@ -52,10 +52,10 @@ public class TeamsController(
             if (team == null)
             {
                 return NotFound($"No team with Id={id} found.");
-        }
+            }
 
             return Ok(team);
-    }
+        }
         catch (Exception ex)
         {
             logger.LogError(ex, "Failed to get team due to an unexpected error");
@@ -134,7 +134,7 @@ public class TeamsController(
             return NoContent();
         }
         catch (InvalidOperationException ex)
-    {
+        {
             logger.LogError(ex, "Failed to delete team");
             return BadRequest(ex.Message);
         }
@@ -143,7 +143,5 @@ public class TeamsController(
             logger.LogError(ex, "Failed to delete team due to an unexpected error");
             return StatusCode((int)HttpStatusCode.InternalServerError, ex);
         }
-
-        return NoContent();
     }
 }

@@ -23,6 +23,7 @@ public static class ServiceCollectionExtensions
 
         services.AddTransient<IEmployeeService, EmployeesService>();
         services.AddTransient<ITeamsService, TeamsService>();
+        services.AddTransient<IRolesService, RolesService>();
     }
 
     public static void AddAppDbContext(this IServiceCollection services, IConfiguration configuration)
@@ -40,6 +41,8 @@ public static class ServiceCollectionExtensions
         services.AddTransient<IEmployeeRepository, EmployeeRepository>();
         services.AddTransient<IUsersRepository, UsersRepository>();
         services.AddTransient<ITeamsRepository, TeamsRepository>();
+        services.AddTransient<IRolesRepository, RolesRepository>();
+        services.AddTransient<IPermissionsRepository, PermissionsRepository>();
     }
 
     private static void AddAuthServices(this IServiceCollection services, IConfiguration configuration)

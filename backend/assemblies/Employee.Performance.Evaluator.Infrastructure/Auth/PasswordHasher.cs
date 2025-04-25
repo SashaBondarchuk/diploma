@@ -1,6 +1,6 @@
-﻿using Employee.Performance.Evaluator.Application.Abstractions.Auth;
+﻿using System.Security.Cryptography;
+using Employee.Performance.Evaluator.Application.Abstractions.Auth;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
-using System.Security.Cryptography;
 
 namespace Employee.Performance.Evaluator.Infrastructure.Auth;
 

@@ -1,11 +1,11 @@
-﻿using Employee.Performance.Evaluator.Application.Abstractions.Auth;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using Employee.Performance.Evaluator.Application.Abstractions.Auth;
 using Employee.Performance.Evaluator.Application.Abstractions.Repositories;
 using Employee.Performance.Evaluator.Core.Entities;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 
 namespace Employee.Performance.Evaluator.Infrastructure.Auth;
 
