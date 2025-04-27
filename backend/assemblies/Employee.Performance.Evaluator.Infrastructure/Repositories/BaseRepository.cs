@@ -20,6 +20,8 @@ public class BaseRepository<T> : IRepository<T> where T : BaseEntity
 
     public async Task<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken) => await _dbSet.AsNoTracking().ToListAsync(cancellationToken);
 
+    public async Task<IEnumerable<T>> GetAllWithTrackingAsync(CancellationToken cancellationToken) => await _dbSet.ToListAsync(cancellationToken);
+
     public async Task<bool> ExistsAsync(int id, CancellationToken cancellationToken) => await _dbSet.AnyAsync(e => e.Id == id, cancellationToken);
 
     public async Task<T> AddAsync(T entity, CancellationToken cancellationToken) => (await _dbSet.AddAsync(entity, cancellationToken)).Entity;

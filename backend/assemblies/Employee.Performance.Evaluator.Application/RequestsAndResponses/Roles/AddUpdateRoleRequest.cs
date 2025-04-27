@@ -3,4 +3,6 @@
 public class AddUpdateRoleRequest
 {
     public string RoleName { get; set; } = string.Empty;
+
+    public List<int> PermissionIds { get; set; } = [];
 }

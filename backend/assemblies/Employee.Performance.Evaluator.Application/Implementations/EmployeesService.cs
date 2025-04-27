@@ -6,7 +6,7 @@ using Employee.Performance.Evaluator.Core.Enums;
 namespace Employee.Performance.Evaluator.Application.Implementations;
 
 public class EmployeesService(
-    IEmployeeRepository employeeRepository,
+    IEmployeesRepository employeeRepository,
     IUsersRepository usersRepository) : IEmployeeService
 {
     public async Task<List<EmployeeViewModel>> GetEmployeesAsync(CancellationToken cancellationToken)

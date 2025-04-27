@@ -2,7 +2,7 @@
 
 namespace Employee.Performance.Evaluator.Application.Abstractions.Repositories;
 
-public interface IEmployeeRepository : IRepository<EmployeeEntity>
+public interface IEmployeesRepository : IRepository<EmployeeEntity>
 {
     Task<EmployeeEntity?> GetByIdWithDetailsAsync(int id, CancellationToken cancellationToken);
 

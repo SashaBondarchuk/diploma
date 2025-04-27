@@ -8,6 +8,8 @@ public interface IRepository<T> where T : BaseEntity
 
     Task<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken);
 
+    Task<IEnumerable<T>> GetAllWithTrackingAsync(CancellationToken cancellationToken);
+
     Task<bool> ExistsAsync(int id, CancellationToken cancellationToken);
 
     Task<T> AddAsync(T entity, CancellationToken cancellationToken);

@@ -13,7 +13,5 @@ public interface IRolesService
 
     Task<Role> UpdateRoleAsync(int id, AddUpdateRoleRequest addUpdateRoleRequest, CancellationToken cancellationToken);
 
-    Task<Role> UpdateRolePermissionsAsync(int id, List<int> permissionIds, CancellationToken cancellationToken);
-
     Task DeleteRoleAsync(int id, CancellationToken cancellationToken);
 }

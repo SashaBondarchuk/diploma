@@ -24,6 +24,8 @@ public static class ServiceCollectionExtensions
         services.AddTransient<IEmployeeService, EmployeesService>();
         services.AddTransient<ITeamsService, TeamsService>();
         services.AddTransient<IRolesService, RolesService>();
+        services.AddTransient<IKPIMetricsService, KPIMetricsService>();
+        services.AddTransient<IRoleKPIsService, RoleKPIsService>();
     }
 
     public static void AddAppDbContext(this IServiceCollection services, IConfiguration configuration)
@@ -38,11 +40,13 @@ public static class ServiceCollectionExtensions
 
         services.AddScoped(typeof(IRepository<>), typeof(BaseRepository<>));
 
-        services.AddTransient<IEmployeeRepository, EmployeeRepository>();
+        services.AddTransient<IEmployeesRepository, EmployeeRepository>();
         services.AddTransient<IUsersRepository, UsersRepository>();
         services.AddTransient<ITeamsRepository, TeamsRepository>();
         services.AddTransient<IRolesRepository, RolesRepository>();
         services.AddTransient<IPermissionsRepository, PermissionsRepository>();
+        services.AddTransient<IKPIMetricsRepository, KPIMetricsRepository>();
+        services.AddTransient<IRoleKPIsRepository, RoleKPIsRepository>();
     }
 
     private static void AddAuthServices(this IServiceCollection services, IConfiguration configuration)

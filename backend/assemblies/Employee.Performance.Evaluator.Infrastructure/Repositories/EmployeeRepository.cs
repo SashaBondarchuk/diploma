@@ -6,7 +6,7 @@ using EmployeeEntity = Employee.Performance.Evaluator.Core.Entities.Employee;
 namespace Employee.Performance.Evaluator.Infrastructure.Repositories;
 
 public class EmployeeRepository(AppDbContext context)
-    : BaseRepository<EmployeeEntity>(context), IEmployeeRepository
+    : BaseRepository<EmployeeEntity>(context), IEmployeesRepository
 {
     public async Task<EmployeeEntity?> GetByIdWithDetailsAsync(int id, CancellationToken cancellationToken)
     {

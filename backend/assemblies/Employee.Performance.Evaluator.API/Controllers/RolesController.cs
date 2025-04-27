@@ -145,33 +145,4 @@ public class RolesController(
             return StatusCode((int)HttpStatusCode.InternalServerError, ex);
         }
     }
-
-    [HttpPut("{id}/permissions")]
-    [HasPermission(UserPermission.ManageRoles)]
-    [ProducesResponseType(typeof(Role), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> UpdateRolePermissions(int id, [FromBody] List<int> permissionIds, CancellationToken cancellationToken)
-    {
-        if (permissionIds == null || permissionIds.Count == 0)
-        {
-            return BadRequest("Invalid permission data.");
-        }
-
-        try
-        {
-            var updatedRole = await rolesService.UpdateRolePermissionsAsync(id, permissionIds, cancellationToken);
-            return Ok(updatedRole);
-        }
-        catch (InvalidOperationException ex)
-        {
-            logger.LogError(ex, "Failed to update role permissions");
-            return BadRequest(ex.Message);
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Failed to update role permissions due to an unexpected error");
-            return StatusCode((int)HttpStatusCode.InternalServerError, ex);
-        }
-    }
 }

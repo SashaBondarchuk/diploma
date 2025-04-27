@@ -39,6 +39,13 @@ public class RolesService(
         }
 
         var roleToCreate = new Role() { RoleName = roleName };
+        var permissions = await permissionsRepository.GetAllWithTrackingAsync(cancellationToken);
+        var permissionsToAdd = permissions.Where(p => addUpdateRoleRequest.PermissionIds.Contains(p.Id)).ToList();
+        foreach (var permission in permissionsToAdd)
+        {
+            roleToCreate.Permissions.Add(permission);
+        }
+
         var addedRole = await rolesRepository.AddAsync(roleToCreate, cancellationToken);
         await rolesRepository.SaveChangesAsync(cancellationToken);
 
@@ -48,40 +55,20 @@ public class RolesService(
     public async Task<Role> UpdateRoleAsync(int id, AddUpdateRoleRequest addUpdateRoleRequest, CancellationToken cancellationToken)
     {
         var roleName = addUpdateRoleRequest.RoleName;
+        var permissionIds = addUpdateRoleRequest.PermissionIds;
         if (string.IsNullOrWhiteSpace(roleName))
         {
             throw new InvalidOperationException("The role name is required.");
         }
 
-        var roleToUpdate = await rolesRepository.GetByIdAsync(id, cancellationToken);
-        if (roleToUpdate == null)
-        {
-            throw new InvalidOperationException($"No role with Id={id} found.");
-        }
-
-        if (roleToUpdate.RoleName == roleName)
-        {
-            throw new InvalidOperationException($"The role name '{roleName}' is already in use.");
-        }
-
-        roleToUpdate.RoleName = roleName;
-        rolesRepository.Update(roleToUpdate);
-        await rolesRepository.SaveChangesAsync(cancellationToken);
-
-        var updatedRole = await rolesRepository.GetByIdWithPermissionsAsync(id, cancellationToken);
-
-        return updatedRole!;
-    }
-
-    public async Task<Role> UpdateRolePermissionsAsync(int id, List<int> permissionIds, CancellationToken cancellationToken)
-    {
         var roleToUpdate = await rolesRepository.GetByIdWithPermissionsAsync(id, cancellationToken);
         if (roleToUpdate == null)
         {
             throw new InvalidOperationException($"No role with Id={id} found.");
         }
 
-        var permissions = await permissionsRepository.GetAllAsync(cancellationToken);
+        roleToUpdate.RoleName = roleName;
+        var permissions = await permissionsRepository.GetAllWithTrackingAsync(cancellationToken);
         roleToUpdate.Permissions.Clear();
 
         var newPermissions = permissions.Where(p => permissionIds.Contains(p.Id)).ToList();
@@ -90,6 +77,7 @@ public class RolesService(
             roleToUpdate.Permissions.Add(permission);
         }
 
+        rolesRepository.Update(roleToUpdate);
         await rolesRepository.SaveChangesAsync(cancellationToken);
 
         return roleToUpdate;
