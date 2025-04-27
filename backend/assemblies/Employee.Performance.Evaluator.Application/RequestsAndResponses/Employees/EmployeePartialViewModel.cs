@@ -10,7 +10,7 @@ public class EmployeePartialViewModel
     public string LastName { get; set; } = string.Empty;
     public byte[]? Avatar { get; set; }
 
-    public int TeamId { get; set; }
+    public int? TeamId { get; set; }
     public int UserId { get; set; }
 
     public UserPartialViewModel User { get; set; } = new();

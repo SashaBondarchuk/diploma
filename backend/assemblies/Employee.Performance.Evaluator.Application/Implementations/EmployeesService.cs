@@ -2,11 +2,15 @@
 using Employee.Performance.Evaluator.Application.Abstractions.Repositories;
 using Employee.Performance.Evaluator.Application.RequestsAndResponses.Employees;
 using Employee.Performance.Evaluator.Core.Enums;
+using EmployeeEntity = Employee.Performance.Evaluator.Core.Entities.Employee;
 
 namespace Employee.Performance.Evaluator.Application.Implementations;
 
 public class EmployeesService(
+    ITransactionService transactionService,
     IEmployeesRepository employeeRepository,
+    ITeamsRepository teamsRepository,
+    IRolesRepository rolesRepository,
     IUsersRepository usersRepository) : IEmployeeService
 {
     public async Task<List<EmployeeViewModel>> GetEmployeesAsync(CancellationToken cancellationToken)
@@ -30,56 +34,113 @@ public class EmployeesService(
         return employee == null ? null : EmployeeViewModel.MapFromDbModel(employee);
     }
 
-    public async Task<EmployeeViewModel> CreateAsync(AddUpdateEmployeeRequest request, CancellationToken cancellationToken)
+    public async Task<EmployeeViewModel> CreateAsync(AddUpdateEmployeeRequest employeeToCreate, CancellationToken cancellationToken)
     {
-        var employeeToCreate = AddUpdateEmployeeRequest.ToDbModel(request);
-        employeeToCreate.HireDate = DateTimeOffset.UtcNow;
+        var employeeToCreateEntity = AddUpdateEmployeeRequest.ToDbModel(employeeToCreate);
+        employeeToCreateEntity.HireDate = DateTimeOffset.UtcNow;
 
-        var user = await usersRepository.GetByIdAsync(request.UserId, cancellationToken);
+        var user = await usersRepository.GetByIdAsync(employeeToCreateEntity.UserId, cancellationToken);
         if (user == null)
         {
-            throw new InvalidOperationException($"User with Id={request.UserId} not found.");
+            throw new InvalidOperationException($"User with Id={employeeToCreateEntity.UserId} not found.");
         }
 
-        var asiggnedEmployee = await employeeRepository.GetByUserIdAsync(request.UserId, cancellationToken);
-        if (asiggnedEmployee != null)
+        var team = await teamsRepository.GetByIdAsync((int)employeeToCreateEntity.TeamId!, cancellationToken);
+        if (team == null)
         {
-            throw new InvalidOperationException($"User with Id={request.UserId} is already assigned to another employee.");
+            throw new InvalidOperationException($"Team with Id={employeeToCreateEntity.TeamId} not found.");
         }
 
-        user.RoleId = request.RoleId;
-        usersRepository.Update(user);
+        var roleExists = await rolesRepository.ExistsAsync(employeeToCreate.RoleId, cancellationToken);
+        if (!roleExists)
+        {
+            throw new InvalidOperationException($"Role with Id={employeeToCreate.RoleId} not found.");
+        }
 
-        var addedEmployee = await employeeRepository.AddAsync(employeeToCreate, cancellationToken);
-        await employeeRepository.SaveChangesAsync(cancellationToken);
+        var assignedEmployee = await employeeRepository.GetByUserIdAsync(employeeToCreateEntity.UserId, cancellationToken);
+        if (assignedEmployee != null)
+        {
+            throw new InvalidOperationException($"User with Id={employeeToCreateEntity.UserId} is already assigned to another employee.");
+        }
+
+        EmployeeEntity addedEmployee = null!;
+        await transactionService.ExecuteInTransactionAsync(async () =>
+        {
+            user.RoleId = employeeToCreate.RoleId;
+            usersRepository.Update(user);
+            await usersRepository.SaveChangesAsync(cancellationToken);
+
+            addedEmployee = await employeeRepository.AddAsync(employeeToCreateEntity, cancellationToken);
+            await employeeRepository.SaveChangesAsync(cancellationToken);
+
+            if (employeeToCreate.IsTeamLead)
+            {
+                team.TeamLeadId = addedEmployee.Id;
+                teamsRepository.Update(team);
+                await teamsRepository.SaveChangesAsync(cancellationToken);
+            }
+        }, cancellationToken);
 
         var addedEmployeeWithDetails = await employeeRepository.GetByIdWithDetailsAsync(addedEmployee.Id, cancellationToken);
 
         return EmployeeViewModel.MapFromDbModel(addedEmployeeWithDetails!);
     }
 
-    public async Task<EmployeeViewModel> UpdateAsync(int id, AddUpdateEmployeeRequest request, CancellationToken cancellationToken)
+    public async Task<EmployeeViewModel> UpdateAsync(int id, AddUpdateEmployeeRequest employeeToUpdate, CancellationToken cancellationToken)
     {
         var existingEmployee = await employeeRepository.GetByIdWithDetailsAsync(id, cancellationToken);
         if (existingEmployee == null)
         {
             throw new InvalidOperationException($"Employee with Id={id} not found.");
         }
-        if (existingEmployee.UserId != request.UserId)
+
+        if (existingEmployee.UserId != employeeToUpdate.UserId)
         {
             throw new InvalidOperationException($"Cannot change the user of an existing employee.");
         }
 
-        existingEmployee.FirstName = request.FirstName;
-        existingEmployee.LastName = request.LastName;
-        existingEmployee.PhoneNumber = request.PhoneNumber;
-        existingEmployee.BirthDate = request.BirthDate;
-        existingEmployee.TeamId = request.TeamId;
-        existingEmployee.Avatar = request.Avatar;
-        existingEmployee.User!.RoleId = request.RoleId;
+        var currentTeam = existingEmployee.Team;
+        var newEmployeeTeam = await teamsRepository.GetByIdAsync(employeeToUpdate.TeamId, cancellationToken);
+        if (newEmployeeTeam == null)
+        {
+            throw new InvalidOperationException($"Team with Id={employeeToUpdate.TeamId} not found.");
+        }
 
-        employeeRepository.Update(existingEmployee);
-        await employeeRepository.SaveChangesAsync(cancellationToken);
+        var roleExists = await rolesRepository.ExistsAsync(employeeToUpdate.RoleId, cancellationToken);
+        if (!roleExists)
+        {
+            throw new InvalidOperationException($"Role with Id={employeeToUpdate.RoleId} not found.");
+        }
+
+        existingEmployee.FirstName = employeeToUpdate.FirstName;
+        existingEmployee.LastName = employeeToUpdate.LastName;
+        existingEmployee.PhoneNumber = employeeToUpdate.PhoneNumber;
+        existingEmployee.BirthDate = employeeToUpdate.BirthDate;
+        existingEmployee.Avatar = employeeToUpdate.Avatar;
+        existingEmployee.User!.RoleId = employeeToUpdate.RoleId;
+
+        await transactionService.ExecuteInTransactionAsync(async () =>
+        {
+            if (existingEmployee.TeamId != employeeToUpdate.TeamId)
+            {
+                if (currentTeam != null && currentTeam.TeamLeadId == existingEmployee.Id)
+                {
+                    currentTeam.TeamLeadId = null;
+                }
+                if (employeeToUpdate.IsTeamLead)
+                {
+                    newEmployeeTeam.TeamLeadId = existingEmployee.Id;
+                }
+
+                teamsRepository.Update(newEmployeeTeam);
+                await teamsRepository.SaveChangesAsync(cancellationToken);
+
+                existingEmployee.TeamId = employeeToUpdate.TeamId;
+            }
+
+            employeeRepository.Update(existingEmployee);
+            await employeeRepository.SaveChangesAsync(cancellationToken);
+        }, cancellationToken);
 
         var updatedEmployee = await employeeRepository.GetByIdWithDetailsAsync(existingEmployee.Id, cancellationToken);
 
@@ -94,9 +155,27 @@ public class EmployeesService(
             throw new InvalidOperationException($"Employee with Id={id} not found.");
         }
 
-        existingEmployee.User!.RoleId = (int)UserRole.Unassigned;
-        employeeRepository.Update(existingEmployee);
+        if (existingEmployee.User!.Role!.Id == (int)UserRole.Unassigned)
+        {
+            throw new InvalidOperationException($"Employee with Id={id} is already deactivated.");
+        }
 
-        await employeeRepository.SaveChangesAsync(cancellationToken);
+        await transactionService.ExecuteInTransactionAsync(async () =>
+        {
+            existingEmployee.User!.RoleId = (int)UserRole.Unassigned;
+            employeeRepository.Update(existingEmployee);
+            await employeeRepository.SaveChangesAsync(cancellationToken);
+
+            var employeeTeam = existingEmployee.Team;
+            if (employeeTeam!.TeamLeadId == existingEmployee.Id)
+            {
+                employeeTeam.TeamLeadId = null;
+            }
+
+            employeeTeam!.Employees!.Remove(existingEmployee);
+
+            teamsRepository.Update(employeeTeam);
+            await teamsRepository.SaveChangesAsync(cancellationToken);
+        }, cancellationToken);
     }
 }

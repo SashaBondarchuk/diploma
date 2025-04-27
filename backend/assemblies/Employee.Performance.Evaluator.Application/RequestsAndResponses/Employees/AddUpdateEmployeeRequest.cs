@@ -9,6 +9,7 @@ public class AddUpdateEmployeeRequest
     public string PhoneNumber { get; set; } = string.Empty;
     public DateTimeOffset BirthDate { get; set; }
     public int TeamId { get; set; }
+    public bool IsTeamLead { get; set; }
     public int UserId { get; set; }
     public byte[]? Avatar { get; set; }
 

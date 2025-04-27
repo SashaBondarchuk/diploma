@@ -18,7 +18,7 @@ public class TeamViewModel
         {
             Id = team.Id,
             Name = team.Name,
-            TeamLeadId = team.TeamLead?.UserId,
+            TeamLeadId = team.TeamLead?.Id,
             TeamLeadAvatar = team.TeamLead?.Avatar,
             TeamLeadFirstName = team.TeamLead?.FirstName,
             TeamLeadLastName = team.TeamLead?.LastName

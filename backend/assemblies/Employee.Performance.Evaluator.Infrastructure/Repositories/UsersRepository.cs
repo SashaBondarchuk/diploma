@@ -13,16 +13,29 @@ public class UsersRepository : BaseRepository<User>, IUsersRepository
 
     public async Task<HashSet<string>> GetPermissionsAsync(int userId, CancellationToken cancellationToken)
     {
-        var userRole = await _context.Users
+        var userRole = await GetWithDetailsInternal()
             .Where(x => x.Id == userId)
-            .Include(x => x.Role)
-                .ThenInclude(x => x!.Permissions)
             .Select(x => x.Role)
-            .ToArrayAsync(cancellationToken);
+            .FirstAsync(cancellationToken);
 
-        return userRole
-            .SelectMany(x => x!.Permissions)
-            .Select(x => x.Name)
-            .ToHashSet();
+        return [.. userRole!.Permissions.Select(x => x.Name)];
+    }
+
+    public Task<List<User>> GetAllWithDetailsAsync(CancellationToken cancellationToken)
+    {
+        return GetWithDetailsInternal().ToListAsync(cancellationToken);
+    }
+
+    public Task<User?> GetByIdWithDetailsAsync(int id, CancellationToken cancellationToken)
+    {
+        return GetWithDetailsInternal()
+            .FirstOrDefaultAsync(e => e.Id == id, cancellationToken);
+    }
+
+    private IQueryable<User> GetWithDetailsInternal()
+    {
+        return _dbSet
+            .Include(e => e.Role)
+                .ThenInclude(e => e!.Permissions);
     }
 }

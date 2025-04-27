@@ -13,5 +13,6 @@ public interface IRoleKPIsRepository
     void Update(RoleKPI entity);
 
     void Delete(RoleKPI entity);
+
     Task SaveChangesAsync(CancellationToken cancellationToken);
 }

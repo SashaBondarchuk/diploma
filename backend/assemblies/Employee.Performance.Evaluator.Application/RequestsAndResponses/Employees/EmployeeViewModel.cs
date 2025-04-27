@@ -12,18 +12,15 @@ public class EmployeeViewModel
     public string PhoneNumber { get; set; } = string.Empty;
     public DateTimeOffset BirthDate { get; set; }
     public DateTimeOffset HireDate { get; set; }
-    public int TeamId { get; set; }
+    public int? TeamId { get; set; }
     public int UserId { get; set; }
     public byte[]? Avatar { get; set; }
 
-    public TeamViewModel Team { get; set; } = new();
+    public TeamViewModel? Team { get; set; } = new();
     public UserViewModel User { get; set; } = new();
 
     public static EmployeeViewModel MapFromDbModel(EmployeeEntity model)
     {
-        if (model.Team == null)
-            throw new InvalidOperationException("Team cannot be null");
-
         if (model.User == null)
             throw new InvalidOperationException("User cannot be null");
 
@@ -38,7 +35,7 @@ public class EmployeeViewModel
             TeamId = model.TeamId,
             UserId = model.UserId,
             Avatar = model.Avatar,
-            Team = TeamViewModel.MapFromDbModel(model.Team),
+            Team = model.Team != null ? TeamViewModel.MapFromDbModel(model.Team) : null,
             User = UserViewModel.MapFromDbModel(model.User)
         };
     }

@@ -4,5 +4,7 @@ namespace Employee.Performance.Evaluator.Application.Abstractions.Repositories;
 
 public interface ITeamsRepository : IRepository<Team>
 {
-    public Task<Team?> GetByIdWithEmployees(int id, CancellationToken cancellationToken);
+    Task<List<Team>> GetAllWithEmployeesAsync(CancellationToken cancellationToken);
+
+    Task<Team?> GetByIdWithEmployeesAsync(int id, CancellationToken cancellationToken);
 }

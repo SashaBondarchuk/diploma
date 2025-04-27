@@ -11,7 +11,13 @@ public class TeamsRepository : BaseRepository<Team>, ITeamsRepository
     {
     }
 
-    public Task<Team?> GetByIdWithEmployees(int id, CancellationToken cancellationToken)
+    public Task<List<Team>> GetAllWithEmployeesAsync(CancellationToken cancellationToken)
+    {
+        return GetWithDetailsInternal()
+            .ToListAsync(cancellationToken);
+    }
+
+    public Task<Team?> GetByIdWithEmployeesAsync(int id, CancellationToken cancellationToken)
     {
         return GetWithDetailsInternal()
             .FirstOrDefaultAsync(t => t.Id == id, cancellationToken);

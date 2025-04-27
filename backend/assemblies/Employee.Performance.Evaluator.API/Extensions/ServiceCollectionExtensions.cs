@@ -26,6 +26,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<IRolesService, RolesService>();
         services.AddTransient<IKPIMetricsService, KPIMetricsService>();
         services.AddTransient<IRoleKPIsService, RoleKPIsService>();
+        services.AddTransient<IUsersService, UsersService>();
     }
 
     public static void AddAppDbContext(this IServiceCollection services, IConfiguration configuration)
@@ -39,6 +40,7 @@ public static class ServiceCollectionExtensions
         services.AddAuthServices(configuration);
 
         services.AddScoped(typeof(IRepository<>), typeof(BaseRepository<>));
+        services.AddScoped<ITransactionService, TransactionService>();
 
         services.AddTransient<IEmployeesRepository, EmployeeRepository>();
         services.AddTransient<IUsersRepository, UsersRepository>();

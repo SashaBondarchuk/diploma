@@ -9,14 +9,14 @@ public class TeamsService(ITeamsRepository teamsRepository) : ITeamsService
 {
     public async Task<List<TeamViewModel>> GetAllTeamsAsync(CancellationToken cancellationToken)
     {
-        var teams = await teamsRepository.GetAllAsync(cancellationToken);
+        var teams = await teamsRepository.GetAllWithEmployeesAsync(cancellationToken);
 
         return [.. teams.Select(t => TeamViewModel.MapFromDbModel(t))];
     }
 
     public async Task<TeamViewModelWithEmployees?> GetByIdAsync(int id, CancellationToken cancellationToken)
     {
-        var team = await teamsRepository.GetByIdWithEmployees(id, cancellationToken);
+        var team = await teamsRepository.GetByIdWithEmployeesAsync(id, cancellationToken);
 
         return team == null ? null : TeamViewModelWithEmployees.MapFromDbModel(team);
     }
@@ -68,7 +68,7 @@ public class TeamsService(ITeamsRepository teamsRepository) : ITeamsService
 
     public async Task DeleteTeamAsync(int id, CancellationToken cancellationToken)
     {
-        var teamToDelete = await teamsRepository.GetByIdWithEmployees(id, cancellationToken);
+        var teamToDelete = await teamsRepository.GetByIdWithEmployeesAsync(id, cancellationToken);
         if (teamToDelete == null)
         {
             throw new InvalidOperationException($"No team with Id={id} found.");
