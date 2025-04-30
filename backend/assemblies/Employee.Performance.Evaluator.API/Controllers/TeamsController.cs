@@ -16,7 +16,7 @@ public class TeamsController(
     [HttpGet]
     [HasPermission(UserPermission.Base)]
     [ProducesResponseType(typeof(List<TeamViewModel>), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetAllTeams(CancellationToken cancellationToken)
     {
@@ -26,7 +26,7 @@ public class TeamsController(
 
             if (teams == null || teams.Count == 0)
             {
-                return NotFound("No teams found.");
+                return NoContent();
             }
 
             return Ok(teams);

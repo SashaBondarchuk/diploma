@@ -17,7 +17,7 @@ public class KPIMetricsController(
     [HttpGet]
     [HasPermission(UserPermission.ManageKpis)]
     [ProducesResponseType(typeof(List<KPIMetric>), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetAllKPIMetrics(CancellationToken cancellationToken)
     {
@@ -27,7 +27,7 @@ public class KPIMetricsController(
 
             if (kPIMetricsList == null || kPIMetricsList.Count == 0)
             {
-                return NotFound("No KPI metrics found.");
+                return NoContent();
             }
 
             return Ok(kPIMetricsList);

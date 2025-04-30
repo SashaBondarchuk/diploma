@@ -18,7 +18,7 @@ public class RoleKPIsController(
     [HasPermission(UserPermission.ManageRoles)]
     [HasPermission(UserPermission.ManageKpis)]
     [ProducesResponseType(typeof(List<RoleKPIViewModel>), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetAllRoleKPIs(CancellationToken cancellationToken)
     {
@@ -28,7 +28,7 @@ public class RoleKPIsController(
 
             if (roleKPIs == null || roleKPIs.Count == 0)
             {
-                return NotFound("No Role KPIs found.");
+                return NoContent();
             }
 
             return Ok(roleKPIs);

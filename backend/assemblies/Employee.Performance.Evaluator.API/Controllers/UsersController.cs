@@ -16,7 +16,7 @@ public class UsersController(
     [HttpGet]
     [HasPermission(UserPermission.ManageEmployees)]
     [ProducesResponseType(typeof(List<UserPartialViewModel>), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetAllUsers(CancellationToken cancellationToken)
     {
@@ -26,7 +26,7 @@ public class UsersController(
 
             if (users == null || users.Count == 0)
             {
-                return NotFound("No users found.");
+                return NoContent();
             }
 
             return Ok(users);

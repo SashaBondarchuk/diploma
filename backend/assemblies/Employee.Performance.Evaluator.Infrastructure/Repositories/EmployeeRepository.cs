@@ -13,6 +13,11 @@ public class EmployeeRepository(AppDbContext context)
         return await GetWithDetailsInternal().FirstOrDefaultAsync(e => e.Id == id, cancellationToken);
     }
 
+    public async Task<EmployeeEntity?> GetByIdWithDetailsAndTeamMembersAsync(int id, CancellationToken cancellationToken)
+    {
+        return await GetWithDetailsInternal(includeTeamMembers: true).FirstOrDefaultAsync(e => e.Id == id, cancellationToken);
+    }
+
     public async Task<IEnumerable<EmployeeEntity>> GetAllWithDetailsAsync(CancellationToken cancellationToken)
     {
         return await GetWithDetailsInternal().AsNoTracking().ToListAsync(cancellationToken);
@@ -26,6 +31,21 @@ public class EmployeeRepository(AppDbContext context)
     public Task<EmployeeEntity?> GetByUserIdAsync(int userId, CancellationToken cancellationToken)
     {
         return _dbSet.FirstOrDefaultAsync(e => e.UserId == userId, cancellationToken);
+    }
+
+    private IQueryable<EmployeeEntity> GetWithDetailsInternal(bool includeTeamMembers)
+    {
+        if (includeTeamMembers)
+        {
+            return _dbSet
+                .Include(e => e.Team)
+                    .ThenInclude(e => e!.Employees)
+                .Include(e => e.User)
+                    .ThenInclude(e => e!.Role)
+                    .ThenInclude(e => e!.Permissions);
+        }
+
+        return GetWithDetailsInternal();
     }
 
     private IQueryable<EmployeeEntity> GetWithDetailsInternal()

@@ -17,7 +17,7 @@ public class RolesController(
     [HttpGet]
     [HasPermission(UserPermission.ManageRoles)]
     [ProducesResponseType(typeof(List<Role>), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetAllRoles(CancellationToken cancellationToken)
     {
@@ -27,7 +27,7 @@ public class RolesController(
 
             if (roles == null || roles.Count == 0)
             {
-                return NotFound("No roles found.");
+                return NoContent();
             }
 
             return Ok(roles);
