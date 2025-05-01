@@ -37,7 +37,7 @@ public class EmployeesService(
     public async Task<EmployeeViewModel> CreateAsync(AddUpdateEmployeeRequest employeeToCreate, CancellationToken cancellationToken)
     {
         var employeeToCreateEntity = AddUpdateEmployeeRequest.ToDbModel(employeeToCreate);
-        employeeToCreateEntity.HireDate = DateTimeOffset.UtcNow;
+        employeeToCreateEntity.HireDate = DateTimeOffset.Now;
 
         var user = await usersRepository.GetByIdAsync(employeeToCreateEntity.UserId, cancellationToken);
         if (user == null)

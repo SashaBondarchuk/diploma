@@ -11,4 +11,6 @@ public interface IEmployeesRepository : IRepository<EmployeeEntity>
     Task<EmployeeEntity?> GetByUserIdWithDetailsAsync(int userId, CancellationToken cancellationToken);
 
     Task<EmployeeEntity?> GetByUserIdAsync(int userId, CancellationToken cancellationToken);
+    
+    Task<EmployeeEntity?> GetByIdWithDetailsAndTeamMembersAsync(int id, CancellationToken cancellationToken);
 }

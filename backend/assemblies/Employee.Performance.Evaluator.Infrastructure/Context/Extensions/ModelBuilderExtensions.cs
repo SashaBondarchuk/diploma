@@ -119,7 +119,7 @@ public static class ModelBuilderExtensions
             entity.HasKey(e => e.Id);
 
             entity.HasOne(e => e.EvaluationSession)
-                  .WithMany(es => es.Evaluations)
+                  .WithMany()
                   .HasForeignKey(e => e.EvaluationSessionId)
                   .OnDelete(DeleteBehavior.Cascade);
 
@@ -185,9 +185,9 @@ public static class ModelBuilderExtensions
             new Permission { Id = 7, Name = "create_recommendations", Description = "Create recommendations based on evaluation sessions" },
             new Permission { Id = 8, Name = "view_all_evaluations", Description = "View all evaluations" },
 
-            new Permission { Id = 9, Name = "view_team_evaluations", Description = "View evaluations of employees from the team" },
+            new Permission { Id = 9, Name = "evaluate_team_members_lead", Description = "Evaluate employees from the team based on all role metrics" },
 
-            new Permission { Id = 10, Name = "evaluate_team_members", Description = "Evaluate employees from the team based on role metrics" },
+            new Permission { Id = 10, Name = "evaluate_team_members", Description = "Evaluate employees from the team based on specific role metrics" },
         };
 
         modelBuilder.Entity<Permission>().HasData(permissions);
@@ -359,6 +359,7 @@ public static class ModelBuilderExtensions
         var evaluationSessions = new Faker<EvaluationSession>()
             .UseSeed(seed)
             .RuleFor(es => es.Id, f => f.IndexFaker + 1)
+            .RuleFor(es => es.Name, f => f.Lorem.Sentence())
             .RuleFor(es => es.EmployeeId, f => f.PickRandom(employees).Id)
             .RuleFor(es => es.ClassId, f => f.PickRandom(employeeClasses).Id)
             .RuleFor(es => es.StartDate, f => f.Date.Past(3, now))

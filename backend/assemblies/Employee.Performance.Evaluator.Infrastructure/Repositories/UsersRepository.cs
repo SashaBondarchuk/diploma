@@ -23,7 +23,7 @@ public class UsersRepository : BaseRepository<User>, IUsersRepository
 
     public Task<List<User>> GetAllWithDetailsAsync(CancellationToken cancellationToken)
     {
-        return GetWithDetailsInternal().ToListAsync(cancellationToken);
+        return GetWithDetailsInternal().AsNoTracking().ToListAsync(cancellationToken);
     }
 
     public Task<User?> GetByIdWithDetailsAsync(int id, CancellationToken cancellationToken)

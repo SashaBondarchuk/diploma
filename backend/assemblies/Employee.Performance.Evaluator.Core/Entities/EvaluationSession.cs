@@ -4,6 +4,7 @@ namespace Employee.Performance.Evaluator.Core.Entities;
 
 public class EvaluationSession : BaseEntity
 {
+    public string Name { get; set; } = string.Empty;
     public DateTimeOffset StartDate { get; set; }
     public DateTimeOffset EndDate { get; set; }
     public DateTimeOffset? EvaluationFinishedDate { get; set; }
@@ -14,5 +15,4 @@ public class EvaluationSession : BaseEntity
 
     public Employee? Employee { get; set; }
     public EmployeeClass? Class { get; set; }
-    public ICollection<Evaluation> Evaluations { get; set; } = [];
 }

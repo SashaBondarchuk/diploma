@@ -14,6 +14,7 @@ public class TeamsRepository : BaseRepository<Team>, ITeamsRepository
     public Task<List<Team>> GetAllWithEmployeesAsync(CancellationToken cancellationToken)
     {
         return GetWithDetailsInternal()
+            .AsNoTracking()
             .ToListAsync(cancellationToken);
     }
 

@@ -18,7 +18,7 @@ public class EmployeesController(
     [HttpGet]
     [HasPermission(UserPermission.Base)]
     [ProducesResponseType(typeof(List<EmployeeViewModel>), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {
@@ -28,7 +28,7 @@ public class EmployeesController(
 
             if (employees == null || employees.Count == 0)
             {
-                return NotFound("No employees found.");
+                return NoContent();
             }
 
             return Ok(employees);

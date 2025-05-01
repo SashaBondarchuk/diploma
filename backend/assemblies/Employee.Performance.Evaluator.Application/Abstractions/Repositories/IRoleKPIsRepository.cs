@@ -8,6 +8,8 @@ public interface IRoleKPIsRepository
 
     Task<RoleKPI?> GetByIdAsync(int roleId, int kpiId, CancellationToken cancellationToken);
 
+    Task<List<RoleKPI>> GetAllByRoleIdAsync(int roleId, CancellationToken cancellationToken);
+    
     Task<RoleKPI> AddAsync(RoleKPI entity, CancellationToken cancellationToken);
 
     void Update(RoleKPI entity);

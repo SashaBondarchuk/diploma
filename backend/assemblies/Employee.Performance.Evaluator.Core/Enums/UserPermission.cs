@@ -28,8 +28,8 @@ public enum UserPermission
     [Display(Name = "view_all_evaluations")]
     ViewAllEvaluations = 8,
 
-    [Display(Name = "view_team_evaluations")]
-    ViewTeamEvaluations = 9,
+    [Display(Name = "evaluate_team_members_lead")]
+    EvaluateTeamMembersLead = 9,
 
     [Display(Name = "evaluate_team_members")]
     EvaluateTeamMembers = 10,

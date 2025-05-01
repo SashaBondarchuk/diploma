@@ -1,64 +1,156 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Net;
+using Employee.Performance.Evaluator.Application.Abstractions;
+using Employee.Performance.Evaluator.Application.RequestsAndResponses.EvaluationSessions;
+using Employee.Performance.Evaluator.Core.Enums;
+using Employee.Performance.Evaluator.Infrastructure.Auth;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Employee.Performance.Evaluator.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class EvaluationSessionsController : ControllerBase
+public class EvaluationSessionsController(
+    ILogger<EvaluationSessionsController> logger,
+    IUserGetter userGetter,
+    IEmployeeService employeeService,
+    IEvaluationSessionsService evaluationSessionsService) : ControllerBase
 {
-    [HttpPost]
-    public IActionResult CreateEvaluationSession([FromBody] string sessionName)
+    [HttpGet]
+    [HasPermission(UserPermission.ManageEvaluations)]
+    [ProducesResponseType(typeof(List<EvaluationSessionViewModel>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetAll(
+        [FromQuery] int? employeeId,
+        [FromQuery] bool? isFinished,
+        CancellationToken cancellationToken)
     {
-        if (string.IsNullOrEmpty(sessionName))
+        try
         {
-            return BadRequest("Session name is required.");
-        }
+            var evaluationSessions = await evaluationSessionsService.GetAllWithDetailsAsync(employeeId, isFinished, cancellationToken);
 
-        // Simulate creating a new evaluation session
-        return CreatedAtAction(nameof(CreateEvaluationSession), new { id = 1, Name = sessionName });
+            if (evaluationSessions == null || evaluationSessions.Count == 0)
+            {
+                return NoContent();
+            }
+
+            return Ok(evaluationSessions);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to get evaluation sessions due to an unexpected error");
+            return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+        }
     }
 
     [HttpGet("{id}")]
-    public IActionResult GetEvaluationSession(int id)
+    [HasPermission(UserPermission.ManageEvaluations)]
+    [ProducesResponseType(typeof(EvaluationSessionViewModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetById(int id, CancellationToken cancellationToken)
     {
-        if (id <= 0)
+        try
         {
-            return BadRequest("Invalid session ID.");
-        }
+            var evaluationSession = await evaluationSessionsService.GetByIdWithDetailsAsync(id, cancellationToken);
 
-        // Simulate getting an evaluation session
-        var session = new { Id = id, Name = "Session " + id };
-        return Ok(session);
+            if (evaluationSession == null)
+            {
+                return NotFound($"No evaluation session with Id={id} found.");
+            }
+
+            return Ok(evaluationSession);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to get evaluation session due to an unexpected error");
+            return StatusCode((int)HttpStatusCode.InternalServerError, ex);
+        }
     }
 
-    [HttpGet("employee/{employeeId}")]
-    public IActionResult GetEmployeeEvaluationHistory(int employeeId)
+    /// <summary>
+    /// Get available sessions for current employee's team members' sessions)
+    /// </summary>
+    [HttpGet("pending-to-be-evaluated")]
+    [HasPermission(UserPermission.EvaluateTeamMembers)]
+    [ProducesResponseType(typeof(List<EvaluationSessionViewModel>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetAvailableSessionsForCurrentEmployeeTeamMembers(CancellationToken cancellationToken)
     {
-        if (employeeId <= 0)
+        try
         {
-            return BadRequest("Invalid employee ID.");
+            var userId = userGetter.GetCurrentUserIdOrThrow();
+            var employee = await employeeService.GetByUserIdAsync(userId, cancellationToken);
+
+            var evaluationSessions = await evaluationSessionsService.GetOngoingEvaluationsForEmployeeTeamMembersAsync(employee!.Id, cancellationToken);
+
+            if (evaluationSessions == null || evaluationSessions.Count == 0)
+            {
+                return NoContent();
+            }
+
+            return Ok(evaluationSessions);
         }
-
-        // Simulate getting evaluation history for an employee
-        var history = new List<string>
+        catch (Exception ex)
         {
-            "Evaluation 1 for Employee " + employeeId,
-            "Evaluation 2 for Employee " + employeeId
-        };
-
-        return Ok(history);
+            logger.LogError(ex, "Failed to get available sessions for current employee team members due to an unexpected error");
+            return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+        }
     }
 
-    [HttpGet("mine")]
-    public IActionResult GetMyEvaluationSessions()
+    [HttpPost]
+    [HasPermission(UserPermission.ManageEvaluations)]
+    [ProducesResponseType(typeof(EvaluationSessionViewModel), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> Create([FromBody] AddEvaluationSessionRequest addEvaluationSessionRequest, CancellationToken cancellationToken)
     {
-        // Simulate getting evaluation sessions for the current user
-        var sessions = new List<string>
+        if (addEvaluationSessionRequest == null)
         {
-            "My Evaluation Session 1",
-            "My Evaluation Session 2"
-        };
+            return BadRequest("Request body cannot be null.");
+        }
 
-        return Ok(sessions);
+        try
+        {
+            var evaluationSession = await evaluationSessionsService.CreateEvaluationSessionAsync(addEvaluationSessionRequest, cancellationToken);
+            return CreatedAtAction(nameof(GetById), new { id = evaluationSession.Id }, evaluationSession);
+        }
+        catch (InvalidOperationException ex)
+        {
+            logger.LogError(ex, "Failed to create evaluation session due to invalid operation");
+            return BadRequest(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to create evaluation session due to an unexpected error");
+            return StatusCode((int)HttpStatusCode.InternalServerError, ex);
+        }
+    }
+
+    // TODO: end evaluation session enpoint
+
+    [HttpDelete("{id}")]
+    [HasPermission(UserPermission.ManageEvaluations)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await evaluationSessionsService.DeleteAsync(id, cancellationToken);
+            return NoContent();
+        }
+        catch (InvalidOperationException ex)
+        {
+            logger.LogError(ex, "Failed to delete evaluation session due to invalid operation");
+            return BadRequest(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to delete evaluation session due to an unexpected error");
+            return StatusCode((int)HttpStatusCode.InternalServerError, ex);
+        }
     }
 }

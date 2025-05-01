@@ -46,7 +46,6 @@ public class UserStorage(IUsersRepository usersRepository) : IUserGetter, IUserI
 
     private async Task<User?> GetCurrentUserEntityAsync(int userId, CancellationToken cancellationToken)
     {
-        return (await usersRepository.GetAllAsync(cancellationToken))
-            .FirstOrDefault(u => u.Id == userId);
+        return await usersRepository.GetByIdWithDetailsAsync(userId, cancellationToken);
     }
 }

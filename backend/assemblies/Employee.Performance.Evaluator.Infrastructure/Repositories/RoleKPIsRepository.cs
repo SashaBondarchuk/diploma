@@ -21,6 +21,14 @@ public class RoleKPIsRepository : IRoleKPIsRepository
         return await GetWithDetailsInternal().AsNoTracking().ToListAsync(cancellationToken);
     }
 
+    public async Task<List<RoleKPI>> GetAllByRoleIdAsync(int roleId, CancellationToken cancellationToken)
+    {
+        return await GetWithDetailsInternal()
+            .Where(e => e.RoleId == roleId)
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
+    }
+
     public async Task<RoleKPI?> GetByIdAsync(int roleId, int kpiId, CancellationToken cancellationToken)
     {
         return await GetWithDetailsInternal()

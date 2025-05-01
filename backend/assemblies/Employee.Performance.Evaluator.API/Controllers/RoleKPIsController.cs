@@ -12,6 +12,7 @@ namespace Employee.Performance.Evaluator.API.Controllers;
 [ApiController]
 public class RoleKPIsController(
     ILogger<RoleKPIsController> logger,
+    IUserGetter userGetter,
     IRoleKPIsService roleKPIsService) : ControllerBase
 {
     [HttpGet]
@@ -62,6 +63,33 @@ public class RoleKPIsController(
         catch (Exception ex)
         {
             logger.LogError(ex, "Failed to get Role KPI due to an unexpected error");
+            return StatusCode((int)HttpStatusCode.InternalServerError, ex);
+        }
+    }
+
+    [HttpGet("session/{sessionId}/kpis-to-evaluate")]
+    [HasPermission(UserPermission.EvaluateTeamMembers)]
+    [ProducesResponseType(typeof(IEnumerable<RoleKPIViewModel>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetAvailableKPIsForSession(int sessionId, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var evaluatorUser = userGetter.GetCurrentUserOrThrow();
+
+            var roleKPIs = await roleKPIsService.GetAvailableKPIsForSession(sessionId, evaluatorUser, cancellationToken);
+
+            if (roleKPIs == null || roleKPIs.Count == 0)
+            {
+                return NoContent();
+            }
+
+            return Ok(roleKPIs);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error occurred while getting available role KPIs for employee.");
             return StatusCode((int)HttpStatusCode.InternalServerError, ex);
         }
     }

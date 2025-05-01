@@ -27,6 +27,8 @@ public static class ServiceCollectionExtensions
         services.AddTransient<IKPIMetricsService, KPIMetricsService>();
         services.AddTransient<IRoleKPIsService, RoleKPIsService>();
         services.AddTransient<IUsersService, UsersService>();
+        services.AddTransient<IEvaluationSessionsService, EvaluationSessionsService>();
+        services.AddTransient<IEvaluationsService, EvaluationsService>();
     }
 
     public static void AddAppDbContext(this IServiceCollection services, IConfiguration configuration)
@@ -49,6 +51,8 @@ public static class ServiceCollectionExtensions
         services.AddTransient<IPermissionsRepository, PermissionsRepository>();
         services.AddTransient<IKPIMetricsRepository, KPIMetricsRepository>();
         services.AddTransient<IRoleKPIsRepository, RoleKPIsRepository>();
+        services.AddTransient<IEvaluationSessionsRepository, EvaluationSessionsRepository>();
+        services.AddTransient<IEvaluationsRepository, EvaluationsRepository>();
     }
 
     private static void AddAuthServices(this IServiceCollection services, IConfiguration configuration)
