@@ -1,47 +1,120 @@
-﻿using Employee.Performance.Evaluator.Core.Entities;
+﻿using System.Net;
+using Employee.Performance.Evaluator.Application.Abstractions;
+using Employee.Performance.Evaluator.Application.RequestsAndResponses.Recommendations;
+using Employee.Performance.Evaluator.Core.Enums;
+using Employee.Performance.Evaluator.Infrastructure.Auth;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Employee.Performance.Evaluator.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class RecommendationsController : ControllerBase
+public class RecommendationsController(
+    ILogger<RecommendationsController> logger,
+    IRecommendationsService recommendationsService) : ControllerBase
 {
-    [HttpPost]
-    public IActionResult CreateRecommendation([FromBody] Recommendation recommendation)
+    [HttpGet]
+    [HasPermission(UserPermission.CreateRecommendations)]
+    [ProducesResponseType(typeof(List<RecommendationViewModel>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetAllRecommendations(CancellationToken cancellationToken)
     {
-        if (recommendation == null)
+        try
         {
-            return BadRequest("Recommendation data is required.");
-        }
+            var recommendations = await recommendationsService.GetAllRecommendationsAsync(cancellationToken);
 
-        // Simulate creating a new recommendation
-        return CreatedAtAction(nameof(CreateRecommendation), new { id = recommendation.Id }, recommendation);
+            if (recommendations == null || !recommendations.Any())
+            {
+                return NoContent();
+            }
+
+            return Ok(recommendations);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to get recommendations due to an unexpected error");
+            return StatusCode((int)HttpStatusCode.InternalServerError, ex);
+        }
     }
 
-    [HttpGet("employee/{employeeId}")]
-    public IActionResult GetRecommendationsForEmployee(int employeeId)
+    [HttpGet("{id}")]
+    [HasPermission(UserPermission.CreateRecommendations)]
+    [ProducesResponseType(typeof(RecommendationViewModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetRecommendationById(int id, CancellationToken cancellationToken)
     {
-        // Simulate getting recommendations for an employee
-        var recommendations = new List<Recommendation>
+        try
         {
-            new Recommendation { Id = 1, EmployeeId = employeeId, RecommendationText = "Great job on the project!" },
-            new Recommendation { Id = 2, EmployeeId = employeeId, RecommendationText = "Keep up the good work!" }
-        };
+            var recommendation = await recommendationsService.GetRecommendationByIdAsync(id, cancellationToken);
 
-        return Ok(recommendations);
+            if (recommendation == null)
+            {
+                return NotFound($"No recommendation with Id={id} found.");
+            }
+
+            return Ok(recommendation);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to get recommendation due to an unexpected error");
+            return StatusCode((int)HttpStatusCode.InternalServerError, ex);
+        }
     }
 
     [HttpGet("mine")]
-    public IActionResult GetMyRecommendations()
+    [HasPermission(UserPermission.Base)]
+    [ProducesResponseType(typeof(List<RecommendationPartialViewModel>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetRecommendationsForCurrentEmployee(CancellationToken cancellationToken)
     {
-        // Simulate getting recommendations for the current user
-        var recommendations = new List<Recommendation>
+        try
         {
-            new Recommendation { Id = 1, EmployeeId = 1, RecommendationText = "Great job on the project!" },
-            new Recommendation { Id = 2, EmployeeId = 1, RecommendationText = "Keep up the good work!" }
-        };
+            var recommendations = await recommendationsService.GetRecommendationsForCurrentEmployeeAsync(cancellationToken);
 
-        return Ok(recommendations);
+            if (recommendations == null || !recommendations.Any())
+            {
+                return NoContent();
+            }
+
+            return Ok(recommendations);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to get recommendations for current employee due to an unexpected error");
+            return StatusCode((int)HttpStatusCode.InternalServerError, ex);
+        }
+    }
+
+    [HttpPost]
+    [HasPermission(UserPermission.CreateRecommendations)]
+    [ProducesResponseType(typeof(RecommendationViewModel), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> AddRecommendation([FromBody] AddRecommendationRequest addRecommendationRequest, CancellationToken cancellationToken)
+    {
+        if (addRecommendationRequest == null)
+        {
+            return BadRequest("AddRecommendationRequest cannot be null.");
+        }
+
+        try
+        {
+            var recommendation = await recommendationsService.AddRecommendationAsync(addRecommendationRequest, cancellationToken);
+
+            return CreatedAtAction(nameof(GetRecommendationById), new { id = recommendation.Id }, recommendation);
+        }
+        catch (InvalidOperationException ex)
+        {
+            logger.LogError(ex, "Failed to add recommendation due to invalid operation");
+            return BadRequest(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to add recommendation due to an unexpected error");
+            return StatusCode((int)HttpStatusCode.InternalServerError, ex);
+        }
     }
 }
