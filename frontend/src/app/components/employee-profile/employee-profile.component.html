@@ -1,0 +1,186 @@
+<div class="employee-profile" *ngIf="employee">
+  <div class="profile-header">
+    <div class="avatar-container">
+      <input
+        #fileInput
+        type="file"
+        accept="image/*"
+        (change)="onAvatarSelected($event)"
+        hidden
+      />
+
+      <ng-container *ngIf="employee?.avatar?.trim(); else defaultAvatar">
+        <div
+          class="avatar-wrapper"
+          [ngClass]="{ 'editable-avatar': canEditEmployeeProfile }"
+          (click)="canEditEmployeeProfile && fileInput.click()"
+        >
+          <p-avatar
+            [image]="formatUserAvatar(employee.avatar)"
+            shape="circle"
+            size="xlarge"
+            [style]="{ width: '120px', height: '120px' }"
+          ></p-avatar>
+          <i
+            *ngIf="canEditEmployeeProfile"
+            class="pi pi-camera camera-icon"
+          ></i>
+        </div>
+      </ng-container>
+
+      <ng-template #defaultAvatar>
+        <div
+          class="avatar-wrapper"
+          [ngClass]="{ 'editable-avatar': canEditEmployeeProfile }"
+          [pTooltip]="
+            canEditEmployeeProfile ? 'Click to change profile photo' : ''
+          "
+          (click)="canEditEmployeeProfile && fileInput.click()"
+        >
+          <p-avatar
+            icon="pi pi-user"
+            shape="circle"
+            size="xlarge"
+            [style]="{ width: '120px', height: '120px', fontSize: '2rem' }"
+          ></p-avatar>
+          <i
+            *ngIf="canEditEmployeeProfile"
+            class="pi pi-camera camera-icon"
+          ></i>
+        </div>
+      </ng-template>
+      <div class="team-badge" *ngIf="isTeamLead">
+        <i class="pi pi-star-fill" pTooltip="Team lead"></i>
+      </div>
+    </div>
+
+    <div class="profile-info">
+      <h2>{{ employee.firstName }} {{ employee.lastName }}</h2>
+      <div class="role-badge" [ngClass]="getRoleClass(employee.user.role.roleName)">
+        <span>{{ employee.user.role.roleName }}</span>
+      </div>
+      <div class="team-info" *ngIf="employee.team">
+        <span class="pi pi-users team-badge-icon"></span>
+        <span>{{ employee.team.name }}</span>
+      </div>
+    </div>
+
+    <div class="profile-actions" *ngIf="canEditEmployeeProfile">
+      <p-button
+        icon="pi pi-pencil"
+        label="Edit Profile"
+        severity="contrast"
+        variant="outlined"
+        (onClick)="openEditDialog($event)"
+      ></p-button>
+    </div>
+  </div>
+
+  <p-divider></p-divider>
+
+  <div class="profile-content">
+    <p-tabView>
+      <p-tabPanel header="Personal information">
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="info-label">Email</div>
+            <div class="info-value">
+              {{ employee.user.email }}
+            </div>
+          </div>
+
+          <div class="info-item">
+            <div class="info-label">Phone number</div>
+            <div class="info-value">
+              {{ employee.phoneNumber }}
+            </div>
+          </div>
+
+          <div class="info-item">
+            <div class="info-label">Date of birth</div>
+            <div class="info-value">{{ formattedBirthDate }}</div>
+          </div>
+
+          <div class="info-item">
+            <div class="info-label">Date of hire</div>
+            <div class="info-value">{{ formattedHireDate }}</div>
+          </div>
+        </div>
+      </p-tabPanel>
+
+      <p-tabPanel header="Team" *ngIf="employee.team">
+        <div class="team-details">
+          <h3>{{ employee.team.name }}</h3>
+
+          <div class="team-lead" *ngIf="employee.team.teamLeadId">
+            <div class="info-label">Team Lead</div>
+            <div class="team-lead-info">
+              <p-avatar
+                *ngIf="employee.team.teamLeadAvatar?.trim(); else defaultIcon"
+                [image]="formatUserAvatar(employee.team.teamLeadAvatar!)"
+                shape="circle"
+                size="normal"
+                class="avatar"
+                tooltipPosition="bottom"
+                [routerLink]="['/home/employee-profile', employee.team.teamLeadId]"
+              />
+              <ng-template #defaultIcon>
+                <p-avatar
+                  icon="pi pi-user"
+                  shape="circle"
+                  size="normal"
+                  class="avatar"
+                  tooltipPosition="bottom"
+                  [routerLink]="['/home/employee-profile', employee.team.teamLeadId]"
+                  />
+              </ng-template>
+              <span
+                >{{ employee.team.teamLeadFirstName }}
+                {{ employee.team.teamLeadLastName }}</span
+              >
+            </div>
+          </div>
+        </div>
+      </p-tabPanel>
+
+      <p-tabPanel header="Permissions" *ngIf="canEditEmployeeProfile">
+        <div class="permissions-container">
+          <div class="permission-chips">
+            <div
+              *ngFor="let permission of employee.user.role.permissions"
+              class="permission-chip"
+              [ngClass]="getPermissionClass(permission.name)"
+            >
+              <span>{{ permission.description }}</span>
+            </div>
+          </div>
+        </div>
+      </p-tabPanel>
+    </p-tabView>
+  </div>
+</div>
+
+<div class="employee-profile-placeholder" *ngIf="!employee">
+  <div class="placeholder-card">
+    <p-skeleton shape="circle" size="96px" class="mb-3"></p-skeleton>
+    <p-skeleton width="40%" height="20px" class="mb-2"></p-skeleton>
+    <p-skeleton width="60%" height="16px" class="mb-4"></p-skeleton>
+
+    <div class="placeholder-info-grid">
+      <p-skeleton width="100%" height="16px"></p-skeleton>
+      <p-skeleton width="100%" height="16px"></p-skeleton>
+      <p-skeleton width="100%" height="16px"></p-skeleton>
+      <p-skeleton width="100%" height="16px"></p-skeleton>
+    </div>
+  </div>
+</div>
+
+<app-user-profile-modal
+  [visible]="editDialogVisible"
+  [employee]="selectedEmployee"
+  [header]="dialogHeader"
+  (visibleChange)="onEditDialogHide()"
+  (save)="onSaveEmployee($event)">
+</app-user-profile-modal>
+
+<p-toast></p-toast>

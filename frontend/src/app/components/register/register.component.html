@@ -1,0 +1,137 @@
+<div class="register-container">
+  <div class="register-card">
+    <div class="register-header">
+      <h2>Registration</h2>
+      <p>Fill the form to register</p>
+    </div>
+
+    <form
+      [formGroup]="registerForm"
+      (ngSubmit)="onSubmit()"
+      class="register-form"
+    >
+      <div class="field">
+        <label for="email">Email</label>
+        <span class="p-input-icon-left w-full">
+          <i class="pi pi-envelope"></i>
+          <input
+            id="email"
+            type="email"
+            pInputText
+            formControlName="email"
+            placeholder="Enter your email"
+            class="w-full"
+          />
+        </span>
+        <small
+          *ngIf="
+            registerForm.get('email')?.invalid &&
+            registerForm.get('email')?.touched
+          "
+          class="p-error"
+        >
+          <span
+            class="error-span"
+            *ngIf="registerForm.get('email')?.errors?.['required']"
+            >Email is required</span
+          >
+          <span
+            class="error-span"
+            *ngIf="registerForm.get('email')?.errors?.['email']"
+            >Enter a valid email</span
+          >
+        </small>
+      </div>
+
+      <div class="field">
+        <label for="password">Password</label>
+        <span class="p-input-icon-left w-full">
+          <i class="pi pi-lock"></i>
+          <input
+            id="password"
+            type="password"
+            pInputText
+            formControlName="password"
+            placeholder="Enter your password"
+            class="w-full"
+          />
+        </span>
+        <small
+          *ngIf="
+            registerForm.get('password')?.invalid &&
+            registerForm.get('password')?.touched
+          "
+          class="p-error"
+        >
+          <span
+            class="error-span"
+            *ngIf="registerForm.get('password')?.errors?.['required']"
+            >Password is required</span
+          >
+          <span
+            class="error-span"
+            *ngIf="registerForm.get('password')?.errors?.['minlength']"
+          >
+            Password must be at least 6 characters long
+          </span>
+        </small>
+      </div>
+
+      <div class="field">
+        <label for="confirmPassword">Password confirmation</label>
+        <span class="p-input-icon-left w-full">
+          <i class="pi pi-lock"></i>
+          <input
+            id="confirmPassword"
+            type="password"
+            pInputText
+            formControlName="confirmPassword"
+            placeholder="Confirm password"
+            class="w-full"
+          />
+        </span>
+        <small
+          *ngIf="
+            registerForm.get('confirmPassword')?.invalid &&
+            registerForm.get('confirmPassword')?.touched
+          "
+          class="p-error"
+        >
+          <span
+            class="error-span"
+            *ngIf="registerForm.get('confirmPassword')?.errors?.['required']"
+          >
+            Password confirmation is required
+          </span>
+          <span
+            class="error-span"
+            *ngIf="registerForm.get('confirmPassword')?.errors?.['passwordMismatch']"
+          >
+            Passwords do not match
+          </span>
+        </small>
+      </div>
+
+      <div class="field">
+        <p-button
+          type="submit"
+          label="Register"
+          [loading]="loading"
+          styleClass="w-full"
+          severity="contrast"
+          variant="outlined"
+          [disabled]="registerForm.invalid"
+        ></p-button>
+      </div>
+
+      <div class="register-footer">
+        <p>
+          Do you have an account?
+          <a routerLink="/login">Login</a>
+        </p>
+      </div>
+    </form>
+  </div>
+</div>
+
+<p-toast></p-toast>

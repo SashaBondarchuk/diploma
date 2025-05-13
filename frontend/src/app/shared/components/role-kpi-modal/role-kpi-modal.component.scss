@@ -1,0 +1,31 @@
+.role-kpi-form {
+  .field {
+    margin-bottom: 1.5rem;
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    }
+
+    p-dropdown,
+    p-inputNumber {
+      width: 100%;
+    }
+
+    .p-error {
+      margin-top: 0.25rem;
+      font-size: 0.875rem;
+    }
+  }
+
+  .field-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    label {
+      cursor: pointer;
+    }
+  }
+}

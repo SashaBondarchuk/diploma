@@ -1,0 +1,119 @@
+<p-dialog
+  [header]="team ? (isViewMode ? 'View Team' : 'Edit Team') : 'Add Team'"
+  [(visible)]="visible"
+  [modal]="true"
+  [style]="{ width: '450px' }"
+  [draggable]="false"
+  [resizable]="false"
+  (onHide)="onCancel()"
+>
+  <form [formGroup]="form" (ngSubmit)="onSave()">
+    <div class="form-field">
+      <label for="name">Team Name</label>
+      <input
+        id="name"
+        type="text"
+        pInputText
+        formControlName="name"
+        [readonly]="isViewMode"
+        [ngClass]="{
+          'ng-invalid ng-dirty':
+            form.get('name')?.invalid && form.get('name')?.touched
+        }"
+      />
+      <small
+        *ngIf="form.get('name')?.invalid && form.get('name')?.touched"
+        class="p-error"
+      >
+        <span *ngIf="form.get('name')?.errors?.['required']"
+          >Team name is required</span
+        >
+        <span *ngIf="form.get('name')?.errors?.['minlength']"
+          >Team name must be at least 3 characters</span
+        >
+      </small>
+    </div>
+
+    <!-- View Mode: Team Members List -->
+    <div *ngIf="isViewMode && team" class="team-members">
+      <h3>Team Members</h3>
+      <div class="team-lead">
+        <h4>Team Lead</h4>
+        <div class="member-item" *ngIf="teamLead">
+          <p-avatar
+            *ngIf="teamLead.avatar?.trim(); else defaultIcon"
+            [image]="formatUserAvatar(teamLead.avatar!)"
+            shape="circle"
+            size="normal"
+            class="avatar"
+            tooltipPosition="bottom"
+            [routerLink]="['/home/employee-profile', teamLead.id]"
+          />
+          <ng-template #defaultIcon>
+            <p-avatar
+              icon="pi pi-user"
+              shape="circle"
+              size="normal"
+              class="avatar"
+              tooltipPosition="bottom"
+              [routerLink]="['/home/employee-profile', teamLead.id]"
+            />
+          </ng-template>
+          <a [routerLink]="['/home/employee-profile', teamLead.id]" class="member-link">
+            <span>{{ teamLead.firstName }} {{ teamLead.lastName }}</span>
+          </a>
+        </div>
+        <div class="member-item" *ngIf="!teamLead">
+          <span class="no-team-lead">No team lead assigned</span>
+        </div>
+      </div>
+      <div class="team-members-list">
+        <h4>Team Members</h4>
+        <div class="member-item" *ngFor="let member of teamMembers">
+          <p-avatar
+            *ngIf="member.avatar?.trim(); else defaultIcon"
+            [image]="formatUserAvatar(member.avatar!)"
+            shape="circle"
+            size="normal"
+            class="avatar"
+            tooltipPosition="bottom"
+            [routerLink]="['/home/employee-profile', member.id]"
+          />
+          <ng-template #defaultIcon>
+            <p-avatar
+              icon="pi pi-user"
+              shape="circle"
+              size="normal"
+              class="avatar"
+              tooltipPosition="bottom"
+              [routerLink]="['/home/employee-profile', member.id]"
+            />
+          </ng-template>
+          <a [routerLink]="['/home/employee-profile', member.id]" class="member-link">
+            <span>{{ member.firstName }} {{ member.lastName }}</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <ng-template pTemplate="footer">
+    <div class="dialog-footer">
+      <button
+        pButton
+        pRipple
+        label="Close"
+        icon="pi pi-times"
+        (click)="onCancel()"
+        class="p-button-text"
+      ></button>
+      <p-button
+        *ngIf="!isViewMode"
+        label="Save"
+        icon="pi pi-check"
+        (onClick)="onSave()"
+        [disabled]="form.invalid"
+      ></p-button>
+    </div>
+  </ng-template>
+</p-dialog>

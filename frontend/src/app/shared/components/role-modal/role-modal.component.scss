@@ -1,0 +1,50 @@
+.role-form {
+  .field {
+    margin-bottom: 1.5rem;
+
+    label {
+      display: block;
+      font-weight: 500;
+    }
+
+    input {
+      width: 100%;
+    }
+
+    .field-checkbox {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      label {
+        cursor: pointer;
+      }
+    }
+  }
+
+  .role-name-label {
+    margin-bottom: 0.2rem;
+  }
+
+  .permissions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-top: 0.5rem;
+  }
+
+  .permission-item {
+    display: flex;
+    align-items: center;
+
+    ::ng-deep {
+      .p-checkbox {
+        margin-right: 0.5rem;
+      }
+
+      .p-checkbox-label {
+        font-size: 0.875rem;
+      }
+    }
+  }
+}

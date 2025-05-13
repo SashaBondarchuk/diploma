@@ -1,0 +1,69 @@
+<div class="recommendation-detail">
+  <div class="header">
+    <h2>Recommendation Details</h2>
+    <p-button
+      icon="pi pi-arrow-left"
+      label="Back"
+      [outlined]="true"
+      [routerLink]="['/home/recommendations']"
+    ></p-button>
+  </div>
+
+  <div class="content" *ngIf="recommendation; else loading">
+    <div class="employee-info">
+      <p-avatar
+        *ngIf="recommendation.employee.avatar; else defaultIcon"
+        [image]="formatUserAvatar(recommendation.employee.avatar)"
+        shape="circle"
+        size="xlarge"
+        class="avatar"
+        [routerLink]="['/home/employee-profile', recommendation.employee.id]"
+      />
+      <ng-template #defaultIcon>
+        <p-avatar
+          icon="pi pi-user"
+          shape="circle"
+          size="xlarge"
+          class="avatar"
+          [routerLink]="['/home/employee-profile', recommendation.employee.id]"
+        />
+      </ng-template>
+      <div class="employee-details">
+        <h3>
+          <a [routerLink]="['/home/employee-profile', recommendation.employee.id]">
+            {{ recommendation.employee.firstName }} {{ recommendation.employee.lastName }}
+          </a>
+        </h3>
+        <div class="role-badge" [ngClass]="getRoleClass()">
+          <span>{{ recommendation.employee.user.roleName }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="recommendation-content">
+      <div class="metadata">
+        <div class="created-at">
+          <i class="pi pi-calendar"></i>
+          <span>Created on {{ recommendation.createdAt | date:'medium' }}</span>
+        </div>
+        <div class="visibility">
+          <i class="pi" [class.pi-eye]="recommendation.isVisibleToEmployee" [class.pi-eye-slash]="!recommendation.isVisibleToEmployee"></i>
+          <span>{{ recommendation.isVisibleToEmployee ? 'Visible to employee' : 'Hidden from employee' }}</span>
+        </div>
+      </div>
+
+      <div class="text">
+        {{ recommendation.recommendationText }}
+      </div>
+    </div>
+  </div>
+
+  <ng-template #loading>
+    <div class="loading">
+      <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+      <p>Loading recommendation...</p>
+    </div>
+  </ng-template>
+
+  <p-toast></p-toast>
+</div> 

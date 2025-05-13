@@ -1,0 +1,98 @@
+:host ::ng-deep {
+  .form-field {
+    margin-bottom: 1rem;
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: var(--text-color);
+      font-weight: 500;
+    }
+
+    input,
+    p-dropdown {
+      width: 100%;
+    }
+
+    .p-dropdown {
+      width: 100%;
+    }
+
+    .user-option {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem;
+
+      .user-avatar {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+    }
+
+    small {
+      display: block;
+      margin-top: 0.25rem;
+    }
+  }
+
+  .team-members {
+    margin-top: 1.5rem;
+
+    h3 {
+      margin-bottom: 1rem;
+    }
+
+    h4 {
+      margin: 0.5rem 0;
+      color: #334155;
+    }
+
+    .team-lead {
+      margin-bottom: 1.5rem;
+    }
+
+    .member-item {
+      display: flex;
+      align-items: center;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #eee;
+      gap: 0.75rem;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      .avatar {
+        cursor: pointer;
+      }
+
+      .member-link {
+        text-decoration: none;
+        color: #333333;
+
+        &:hover {
+          color: #63666d;
+        }
+
+        span {
+          font-size: 0.9rem;
+        }
+      }
+
+      .no-team-lead {
+        color: #666666;
+        font-style: italic;
+      }
+    }
+  }
+
+  .dialog-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+}

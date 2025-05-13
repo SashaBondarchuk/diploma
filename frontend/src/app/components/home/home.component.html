@@ -1,0 +1,16 @@
+<div class="home-container">
+  <app-header
+    [userData]="currentUser"
+    [employeeData]="currentEmployee"
+    (logoutEvent)="logout()"
+  ></app-header>
+  <div class="content-container">
+    <app-sidebar [items]="menuItems"></app-sidebar>
+    <div class="main-content">
+      <h3>{{ selectedMenuItem }}</h3>
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>
+
+<p-toast></p-toast>

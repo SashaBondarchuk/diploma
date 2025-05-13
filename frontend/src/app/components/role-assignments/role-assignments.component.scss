@@ -1,0 +1,79 @@
+:host {
+  display: block;
+}
+
+.role-assignments {
+  padding: 1.5rem;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+  .header {
+    margin-bottom: 1.5rem;
+
+    h2 {
+      margin: 0;
+      color: #333;
+      font-size: 1.5rem;
+    }
+  }
+}
+
+.employee-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  span {
+    font-weight: 500;
+  }
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.empty-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  color: #666;
+
+  i {
+    margin-bottom: 1rem;
+    color: #9ca3af;
+  }
+
+  p {
+    margin: 0;
+    font-size: 1rem;
+  }
+}
+
+:host ::ng-deep {
+  .p-datatable {
+    .p-datatable-header {
+      background: transparent;
+      border: none;
+      padding: 0;
+    }
+
+    .p-datatable-thead > tr > th {
+      background: #f8f9fa;
+      color: #495057;
+      font-weight: 600;
+      padding: 1rem;
+    }
+
+    .p-datatable-tbody > tr > td {
+      padding: 1rem;
+    }
+
+    .p-datatable-tbody > tr:hover {
+      background: #f8f9fa;
+    }
+  }
+}

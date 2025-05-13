@@ -1,0 +1,110 @@
+<div class="role-kpis-management">
+  <div class="header">
+    <h2>Role's KPI Management</h2>
+    <div class="header-actions">
+      <span class="p-input-icon-left search-input">
+        <i class="pi pi-search"></i>
+        <input
+          type="text"
+          pInputText
+          [formControl]="searchControl"
+          placeholder="Search role's KPI..."
+        />
+      </span>
+      <p-button
+        label="Add Role's KPI"
+        icon="pi pi-plus"
+        severity="contrast"
+        variant="outlined"
+        (onClick)="openAddDialog()"
+      ></p-button>
+    </div>
+  </div>
+
+  <p-table
+    [value]="filteredRoleKpis"
+    [loading]="loading"
+    [paginator]="true"
+    [rows]="5"
+    [showCurrentPageReport]="true"
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+    [rowsPerPageOptions]="[5, 10, 20]"
+    styleClass="p-datatable-sm"
+    [tableStyle]="{ 'min-width': '50rem' }"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Role</th>
+        <th>KPI</th>
+        <th>Weight</th>
+        <th>Min Score</th>
+        <th>Max Score</th>
+        <th>Score Range Description</th>
+        <th>Non-Lead Evaluation</th>
+        <th style="width: 150px">Actions</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-roleKpi>
+      <tr>
+        <td>
+          <span class="role-chip" [ngClass]="getRoleClass(roleKpi.roleName)">
+            {{ roleKpi.roleName }}
+          </span>
+        </td>
+        <td>{{ roleKpi.kpiName }}</td>
+        <td>{{ roleKpi.weight * 100 | number:'1.0-2' }}%</td>
+        <td>{{ roleKpi.minScore }}</td>
+        <td>{{ roleKpi.maxScore }}</td>
+        <td>{{ roleKpi.scoreRangeDescription }}</td>
+        <td>
+          <i class="pi" [ngClass]="roleKpi.isAllowedToEvaluateExceptLead ? 'pi-check-circle text-green-500' : 'pi-times-circle text-red-500'"></i>
+        </td>
+        <td>
+          <div class="actions">
+            <p-button
+              icon="pi pi-pencil"
+              (onClick)="openEditDialog(roleKpi)"
+              [outlined]="true"
+              styleClass="p-button"
+            ></p-button>
+            <p-button
+              icon="pi pi-trash"
+              (onClick)="confirmDelete(roleKpi)"
+              [outlined]="true"
+              severity="danger"
+              styleClass="p-button"
+            ></p-button>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="8">
+          <div class="empty-message">
+            <i class="pi pi-inbox" style="font-size: 3rem"></i>
+            <p>No role KPIs found</p>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <app-role-kpi-modal
+    [(visible)]="showRoleKpiModal"
+    [roleKpi]="selectedRoleKpi"
+    [roles]="roles"
+    [kpis]="kpis"
+    (visibleChange)="onRoleKpiModalHide()"
+    (save)="onSaveRoleKpi($event)"
+  ></app-role-kpi-modal>
+
+  <p-confirmDialog
+    [acceptLabel]="'Delete'"
+    [rejectLabel]="'Cancel'"
+    [acceptButtonStyleClass]="'p-button-danger p-button-outlined'"
+    [rejectButtonStyleClass]="'p-button p-button-text'"
+    [icon]="'pi pi-trash'"
+  ></p-confirmDialog>
+  <p-toast></p-toast>
+</div>

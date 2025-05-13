@@ -1,0 +1,91 @@
+<div class="login-container">
+  <div class="login-card">
+    <div class="login-header">
+      <h2>Login</h2>
+      <p>Enter your credentials</p>
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+      <div class="field">
+        <label for="email">Email</label>
+        <span class="p-input-icon-left w-full">
+          <i class="pi pi-envelope"></i>
+          <input
+            id="email"
+            type="email"
+            pInputText
+            formControlName="email"
+            placeholder="Enter your Email"
+            class="w-full"
+          />
+        </span>
+        <small
+          *ngIf="
+            loginForm.get('email')?.invalid && loginForm.get('email')?.touched
+          "
+          class="p-error"
+        >
+          <span
+            class="error-span"
+            *ngIf="loginForm.get('email')?.errors?.['required']"
+            >Email is required</span
+          >
+          <span
+            class="error-span"
+            *ngIf="loginForm.get('email')?.errors?.['email']"
+            >Enter a valid email</span
+          >
+        </small>
+      </div>
+
+      <div class="field">
+        <label for="password">Password</label>
+        <span class="p-input-icon-left w-full">
+          <i class="pi pi-lock"></i>
+          <input
+            id="password"
+            type="password"
+            pInputText
+            formControlName="password"
+            placeholder="Enter your password"
+            class="w-full"
+          />
+        </span>
+        <small
+          *ngIf="
+            loginForm.get('password')?.invalid &&
+            loginForm.get('password')?.touched
+          "
+          class="p-error"
+        >
+          <span
+            class="error-span"
+            *ngIf="loginForm.get('password')?.errors?.['required']"
+            >Password is required</span
+          >
+        </small>
+      </div>
+
+      <div class="field">
+        <p-button
+          type="submit"
+          label="Login"
+          [loading]="loading"
+          styleClass="w-full"
+          severity="contrast"
+          variant="outlined"
+          [disabled]="loginForm.invalid"
+        ></p-button>
+      </div>
+
+      <div class="login-footer">
+        <p>
+          Do not have an account?
+          <a routerLink="/register">Register</a>
+        </p>
+      </div>
+    </form>
+  </div>
+</div>
+
+<p-toast></p-toast>

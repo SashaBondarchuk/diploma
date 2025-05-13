@@ -1,0 +1,50 @@
+:host {
+  display: block;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 2;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 1.5rem;
+  background-color: #ffffff;
+  height: 60px;
+}
+
+.logo h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #000000;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.user-name {
+  font-weight: 500;
+}
+
+.avatar {
+  cursor: pointer;
+}
+
+::ng-deep .custom-logout-button .p-button-icon {
+  color: rgb(0, 0, 0);
+}
+
+::ng-deep p-button .p-button-text:not(:disabled) {
+  &:hover {
+    background-color: #e8f1f7;
+  }
+  &:focus {
+    background-color: #e8f1f7;
+  }
+  &:active {
+    background-color: #e8f1f7;
+  }
+}

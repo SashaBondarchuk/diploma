@@ -1,0 +1,41 @@
+<header class="header">
+  <div class="logo">
+    <h1>Employee Performance Evaluator</h1>
+  </div>
+  <div class="user-info" *ngIf="userData && employeeData">
+    <div class="role-badge" [ngClass]="getRoleClass(employeeData.user.role.roleName)">
+      <span>{{ employeeData.user.role.roleName }}</span>
+    </div>
+    <span class="user-name"
+      >{{ employeeData.firstName }} {{ employeeData.lastName }}</span
+    >
+    <p-avatar
+      *ngIf="employeeData?.avatar?.trim(); else defaultIcon"
+      [image]="employeeData.avatar"
+      shape="circle"
+      size="normal"
+      class="avatar"
+      pTooltip="User profile"
+      tooltipPosition="bottom"
+      [routerLink]="['/home/employee-profile', employeeData.id]"
+    />
+    <ng-template #defaultIcon>
+      <p-avatar
+        icon="pi pi-user"
+        shape="circle"
+        size="normal"
+        class="avatar"
+        pTooltip="User profile"
+        tooltipPosition="bottom"
+        [routerLink]="['/home/employee-profile', employeeData.id]"
+      />
+    </ng-template>
+    <p-button
+      icon="pi pi-sign-out"
+      styleClass="p-button-rounded p-button-text custom-logout-button"
+      (onClick)="logout()"
+      pTooltip="Logout"
+      tooltipPosition="bottom"
+    ></p-button>
+  </div>
+</header>

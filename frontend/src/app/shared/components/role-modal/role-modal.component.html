@@ -1,0 +1,77 @@
+<p-dialog
+  [header]="role ? 'Edit Role' : 'Add Role'"
+  [(visible)]="visible"
+  [modal]="true"
+  [style]="{ width: '35vw' }"
+  [draggable]="false"
+  [resizable]="false"
+  (onHide)="onHide()"
+>
+  <form [formGroup]="form" class="role-form">
+    <div class="field">
+      <label for="roleName" class="role-name-label">Role Name</label>
+      <input
+        id="roleName"
+        type="text"
+        pInputText
+        formControlName="roleName"
+        [class.ng-invalid]="
+          form.get('roleName')?.invalid && form.get('roleName')?.touched
+        "
+        [class.ng-dirty]="form.get('roleName')?.dirty"
+      />
+      <small
+        class="p-error"
+        *ngIf="form.get('roleName')?.invalid && form.get('roleName')?.touched"
+      >
+        Role name is required and must be less than 50 characters
+      </small>
+    </div>
+
+    <div class="field">
+      <label>Permissions</label>
+      <div class="permissions-grid">
+        <div *ngFor="let permission of permissions" class="permission-item">
+          <div class="field-checkbox">
+            <p-checkbox
+              [value]="permission.name"
+              formControlName="permissions"
+              inputId="permission-{{ permission.id }}"
+            ></p-checkbox>
+            <label for="permission-{{ permission.id }}">{{
+              permission.description
+            }}</label>
+          </div>
+        </div>
+      </div>
+      <small
+        class="p-error"
+        *ngIf="
+          form.get('permissions')?.invalid && form.get('permissions')?.touched
+        "
+      >
+        At least one permission must be selected
+      </small>
+    </div>
+  </form>
+
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      pRipple
+      label="Cancel"
+      icon="pi pi-times"
+      class="p-button-text"
+      (click)="onHide()"
+    ></button>
+    <button
+      pButton
+      severity="contrast"
+      label="Save"
+      icon="pi pi-check"
+      [loading]="saving"
+      [disabled]="form.invalid"
+      (click)="onSave()"
+    ></button>
+  </ng-template>
+</p-dialog>

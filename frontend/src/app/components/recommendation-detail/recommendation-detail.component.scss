@@ -1,0 +1,104 @@
+:host {
+  display: block;
+}
+
+.recommendation-detail {
+  padding: 1.5rem;
+  background: var(--surface-card);
+  border-radius: 6px;
+  box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.2),
+    0 1px 1px 0 rgba(0, 0, 0, 0.14), 0 1px 3px 0 rgba(0, 0, 0, 0.12);
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+
+    h2 {
+      margin: 0;
+      color: var(--text-color);
+    }
+  }
+
+  .content {
+    .employee-info {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+      border-bottom: 1px solid var(--surface-border);
+
+      .avatar {
+        cursor: pointer;
+      }
+
+      .employee-details {
+        h3 {
+          margin: 0 0 0.5rem 0;
+          font-size: 1.5rem;
+          color: var(--text-color);
+
+          a {
+            text-decoration: none;
+            color: inherit;
+
+            &:hover {
+              color: var(--primary-color);
+            }
+          }
+        }
+
+        .role {
+          color: var(--text-color-secondary);
+          font-size: 0.875rem;
+        }
+      }
+    }
+
+    .recommendation-content {
+      .metadata {
+        display: flex;
+        gap: 2rem;
+        margin-bottom: 1.5rem;
+        color: var(--text-color-secondary);
+        font-size: 0.875rem;
+
+        .created-at,
+        .visibility {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+
+          i {
+            font-size: 1rem;
+          }
+        }
+      }
+
+      .text {
+        font-size: 1.125rem;
+        line-height: 1.6;
+        color: var(--text-color);
+        white-space: pre-wrap;
+      }
+    }
+  }
+
+  .loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+    color: var(--text-color-secondary);
+
+    i {
+      margin-bottom: 1rem;
+    }
+
+    p {
+      margin: 0;
+    }
+  }
+} 

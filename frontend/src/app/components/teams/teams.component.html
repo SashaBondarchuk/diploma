@@ -1,0 +1,130 @@
+<div class="teams-management">
+  <div class="header">
+    <h2>Teams Management</h2>
+    <div class="header-actions">
+      <span class="p-input-icon-left search-input">
+        <i class="pi pi-search"></i>
+        <input
+          type="text"
+          pInputText
+          [formControl]="searchControl"
+          placeholder="Search teams..."
+        />
+      </span>
+      <p-button
+        *ngIf="canEdit"
+        label="Add Team"
+        icon="pi pi-plus"
+        severity="contrast"
+        variant="outlined"
+        (onClick)="openAddDialog()"
+      ></p-button>
+    </div>
+  </div>
+
+  <p-table
+    [value]="filteredTeams"
+    [loading]="loading"
+    [paginator]="true"
+    [rows]="5"
+    [showCurrentPageReport]="true"
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+    [rowsPerPageOptions]="[5, 10, 20]"
+    styleClass="p-datatable-sm"
+    [tableStyle]="{ 'min-width': '50rem' }"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Team Name</th>
+        <th>Team Lead</th>
+        <th style="width: 150px">Actions</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-team>
+      <tr>
+        <td>{{ team.name }}</td>
+        <td>
+          <div class="team-lead">
+            <ng-container *ngIf="team.teamLeadId">
+              <p-avatar
+                *ngIf="team.teamLeadAvatar?.trim(); else defaultIcon"
+                [image]="formatUserAvatar(team.teamLeadAvatar!)"
+                shape="circle"
+                size="normal"
+                class="avatar"
+                tooltipPosition="bottom"
+                [routerLink]="['/home/employee-profile', team.teamLeadId]"
+              />
+              <ng-template #defaultIcon>
+                <p-avatar
+                  icon="pi pi-user"
+                  shape="circle"
+                  size="normal"
+                  class="avatar"
+                  tooltipPosition="bottom"
+                  [routerLink]="['/home/employee-profile', team.teamLeadId]"
+                />
+              </ng-template>
+              <a [routerLink]="['/home/employee-profile', team.teamLeadId]" class="team-lead-link">
+                <span>{{ team.teamLeadFirstName }} {{ team.teamLeadLastName }}</span>
+              </a>
+            </ng-container>
+            <span *ngIf="!team.teamLeadId" class="no-team-lead">No team lead</span>
+          </div>
+        </td>
+        <td>
+          <div class="actions">
+            <p-button
+              icon="pi pi-eye"
+              (onClick)="openViewDialog(team)"
+              [outlined]="true"
+              styleClass="p-button"
+            ></p-button>
+            <p-button
+              *ngIf="canEdit"
+              icon="pi pi-pencil"
+              (onClick)="openEditDialog(team)"
+              [outlined]="true"
+              styleClass="p-button"
+            ></p-button>
+            <p-button
+              *ngIf="canEdit"
+              icon="pi pi-trash"
+              (onClick)="confirmDelete(team)"
+              [outlined]="true"
+              severity="danger"
+              styleClass="p-button"
+            ></p-button>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="3">
+          <div class="empty-message">
+            <i class="pi pi-users" style="font-size: 3rem"></i>
+            <p>No teams found</p>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <app-team-modal
+    [(visible)]="showTeamModal"
+    [team]="selectedTeam"
+    [isViewModeSelected]="isViewModeSelected"
+    (visibleChange)="onTeamModalHide()"
+    (save)="onSaveTeam($event)"
+  ></app-team-modal>
+
+  <p-confirmDialog
+    [acceptLabel]="'Delete'"
+    [rejectLabel]="'Cancel'"
+    [acceptButtonStyleClass]="'p-button-danger p-button-outlined'"
+    [rejectButtonStyleClass]="'p-button p-button-text'"
+    [icon]="'pi pi-trash'"
+  ></p-confirmDialog>
+  <p-toast></p-toast>
+</div>

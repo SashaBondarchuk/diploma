@@ -1,0 +1,220 @@
+<p-dialog
+  [(visible)]="visible"
+  [style]="{ width: '700px' }"
+  [header]="header"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [closeOnEscape]="true"
+  (onHide)="onHide()"
+>
+  <div *ngIf="loadingTeamsAndRoles" class="loading-container">
+    <p-progressSpinner></p-progressSpinner>
+    <span>Loading data...</span>
+  </div>
+
+  <form
+    [formGroup]="editForm"
+    class="edit-form p-fluid"
+    *ngIf="!loadingTeamsAndRoles"
+  >
+    <div class="form-grid">
+      <!-- Left Column -->
+      <div class="form-column">
+        <div class="field">
+          <label for="firstName">First Name*</label>
+          <input
+            id="firstName"
+            type="text"
+            pInputText
+            formControlName="firstName"
+            [ngClass]="{
+              'ng-invalid ng-dirty':
+                editForm.get('firstName')?.invalid &&
+                editForm.get('firstName')?.touched
+            }"
+          />
+          <small
+            *ngIf="
+              editForm.get('firstName')?.invalid &&
+              editForm.get('firstName')?.touched
+            "
+            class="p-error"
+          >
+            First name is required
+          </small>
+        </div>
+
+        <div class="field">
+          <label for="lastName">Last Name*</label>
+          <input
+            id="lastName"
+            type="text"
+            pInputText
+            formControlName="lastName"
+            [ngClass]="{
+              'ng-invalid ng-dirty':
+                editForm.get('lastName')?.invalid &&
+                editForm.get('lastName')?.touched
+            }"
+          />
+          <small
+            *ngIf="
+              editForm.get('lastName')?.invalid &&
+              editForm.get('lastName')?.touched
+            "
+            class="p-error"
+          >
+            Last name is required
+          </small>
+        </div>
+
+        <div class="field">
+          <label for="teamId">Team*</label>
+          <p-dropdown
+            id="teamId"
+            formControlName="teamId"
+            [options]="teams"
+            optionLabel="name"
+            optionValue="id"
+            placeholder="Select a team"
+            [filter]="true"
+            filterBy="name"
+            appendTo="body"
+            [ngClass]="{
+              'ng-invalid ng-dirty':
+                editForm.get('teamId')?.invalid &&
+                editForm.get('teamId')?.touched
+            }"
+          ></p-dropdown>
+          <small
+            *ngIf="
+              editForm.get('teamId')?.invalid && editForm.get('teamId')?.touched
+            "
+            class="p-error"
+          >
+            Team is required
+          </small>
+        </div>
+
+        <div class="field">
+          <label for="phoneNumber">Phone Number*</label>
+          <input
+            id="phoneNumber"
+            type="text"
+            pInputText
+            formControlName="phoneNumber"
+            [ngClass]="{
+              'ng-invalid ng-dirty':
+                editForm.get('phoneNumber')?.invalid &&
+                editForm.get('phoneNumber')?.touched
+            }"
+          />
+          <small
+            *ngIf="
+              editForm.get('phoneNumber')?.invalid &&
+              editForm.get('phoneNumber')?.touched
+            "
+            class="p-error"
+          >
+            <span
+              class="error-span"
+              *ngIf="editForm.get('phoneNumber')?.errors?.['required']"
+              >Phone number is required</span
+            >
+            <span
+              class="error-span"
+              *ngIf="editForm.get('phoneNumber')?.errors?.['pattern']"
+              >Please enter a valid phone number</span
+            >
+          </small>
+        </div>
+      </div>
+
+      <!-- Right Column -->
+      <div class="form-column">
+        <div class="field">
+          <label for="birthDate">Date of Birth*</label>
+          <p-datepicker
+            id="birthDate"
+            formControlName="birthDate"
+            [showIcon]="true"
+            [maxDate]="currentDate"
+            dateFormat="dd.mm.yy"
+            appendTo="body"
+            [ngClass]="{
+              'ng-invalid ng-dirty':
+                editForm.get('birthDate')?.invalid &&
+                editForm.get('birthDate')?.touched
+            }"
+          ></p-datepicker>
+          <small
+            *ngIf="
+              editForm.get('birthDate')?.invalid &&
+              editForm.get('birthDate')?.touched
+            "
+            class="p-error"
+          >
+            Date of birth is required
+          </small>
+        </div>
+
+        <div class="field">
+          <label for="roleId">Role*</label>
+          <p-dropdown
+            id="roleId"
+            formControlName="roleId"
+            [options]="roles"
+            optionLabel="roleName"
+            optionValue="id"
+            placeholder="Select a role"
+            [filter]="true"
+            filterBy="roleName"
+            appendTo="body"
+            [ngClass]="{
+              'ng-invalid ng-dirty':
+                editForm.get('roleId')?.invalid &&
+                editForm.get('roleId')?.touched
+            }"
+          ></p-dropdown>
+          <small
+            *ngIf="
+              editForm.get('roleId')?.invalid && editForm.get('roleId')?.touched
+            "
+            class="p-error"
+          >
+            Role is required
+          </small>
+        </div>
+
+        <div class="field-checkbox">
+          <p-checkbox
+            formControlName="isTeamLead"
+            [binary]="true"
+            inputId="isTeamLead"
+          ></p-checkbox>
+          <label for="isTeamLead">Is Team Lead</label>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      pRipple
+      label="Cancel"
+      icon="pi pi-times"
+      class="p-button-text"
+      (click)="onHide()"
+    ></button>
+    <p-button
+      icon="pi pi-check"
+      label="Save"
+      severity="contrast"
+      [loading]="saving"
+      [disabled]="editForm.invalid"
+      (onClick)="saveChanges()"
+    ></p-button>
+  </ng-template>
+</p-dialog>

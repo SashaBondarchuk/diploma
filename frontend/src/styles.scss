@@ -1,0 +1,43 @@
+@use 'styles/chips';
+@import "primeicons/primeicons.css";
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  font-size: 16px;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+button {
+  all: unset;
+  cursor: pointer;
+}
+
+a {
+  cursor: pointer;
+  text-decoration: none;
+}
+
+ul li {
+  list-style: none;
+}
+
+ul,
+p {
+  padding: 0;
+  margin: 0;
+}
+
+.p-select-overlay {
+  width: 100%;
+}

@@ -1,0 +1,175 @@
+<p-dialog
+  [header]="roleKpi ? `Edit Role's KPI` : `Add Role's KPI`"
+  [(visible)]="visible"
+  [modal]="true"
+  [style]="{ width: '450px' }"
+  [draggable]="false"
+  [resizable]="false"
+  (onHide)="onHide()"
+>
+  <form [formGroup]="form" class="role-kpi-form">
+    <div class="field">
+      <label for="roleId">Role</label>
+      <p-dropdown
+        id="roleId"
+        [options]="roles"
+        formControlName="roleId"
+        optionLabel="roleName"
+        optionValue="id"
+        placeholder="Select a role"
+        [filter]="true"
+        filterBy="roleName"
+        [class.ng-invalid]="
+          form.get('roleId')?.invalid && form.get('roleId')?.touched
+        "
+        [class.ng-dirty]="form.get('roleId')?.dirty"
+      ></p-dropdown>
+      <small
+        class="p-error"
+        *ngIf="form.get('roleId')?.invalid && form.get('roleId')?.touched"
+      >
+        Please select a role
+      </small>
+    </div>
+
+    <div class="field">
+      <label for="kpiId">KPI</label>
+      <p-dropdown
+        id="kpiId"
+        [options]="kpis"
+        formControlName="kpiId"
+        optionLabel="name"
+        optionValue="id"
+        placeholder="Select a KPI"
+        [filter]="true"
+        filterBy="name"
+        [class.ng-invalid]="
+          form.get('kpiId')?.invalid && form.get('kpiId')?.touched
+        "
+        [class.ng-dirty]="form.get('kpiId')?.dirty"
+      ></p-dropdown>
+      <small
+        class="p-error"
+        *ngIf="form.get('kpiId')?.invalid && form.get('kpiId')?.touched"
+      >
+        Please select a KPI
+      </small>
+    </div>
+
+    <div class="field">
+      <label for="weight">Weight (%)</label>
+      <p-inputNumber
+        id="weight"
+        formControlName="weight"
+        [min]="0"
+        [max]="100"
+        [showButtons]="true"
+        [minFractionDigits]="0"
+        [maxFractionDigits]="2"
+        suffix="%"
+        [useGrouping]="false"
+        [locale]="'en-US'"
+        [class.ng-invalid]="
+          form.get('weight')?.invalid && form.get('weight')?.touched
+        "
+        [class.ng-dirty]="form.get('weight')?.dirty"
+      ></p-inputNumber>
+      <small
+        class="p-error"
+        *ngIf="form.get('weight')?.invalid && form.get('weight')?.touched"
+      >
+        Weight is required and must be between 0 and 100
+      </small>
+    </div>
+
+    <div class="field">
+      <label for="minScore">Minimum Score</label>
+      <p-inputNumber
+        id="minScore"
+        formControlName="minScore"
+        [min]="0"
+        [showButtons]="true"
+        [class.ng-invalid]="
+          form.get('minScore')?.invalid && form.get('minScore')?.touched
+        "
+        [class.ng-dirty]="form.get('minScore')?.dirty"
+      ></p-inputNumber>
+      <small
+        class="p-error"
+        *ngIf="form.get('minScore')?.invalid && form.get('minScore')?.touched"
+      >
+        Minimum score is required and must be greater than or equal to 0
+      </small>
+    </div>
+
+    <div class="field">
+      <label for="maxScore">Maximum Score</label>
+      <p-inputNumber
+        id="maxScore"
+        formControlName="maxScore"
+        [min]="0"
+        [showButtons]="true"
+        [class.ng-invalid]="
+          form.get('maxScore')?.invalid && form.get('maxScore')?.touched
+        "
+        [class.ng-dirty]="form.get('maxScore')?.dirty"
+      ></p-inputNumber>
+      <small
+        class="p-error"
+        *ngIf="form.get('maxScore')?.invalid && form.get('maxScore')?.touched"
+      >
+        Maximum score is required and must be greater than or equal to 0
+      </small>
+    </div>
+
+    <div class="field">
+      <label for="scoreRangeDescription">Score Range Description</label>
+      <textarea
+        id="scoreRangeDescription"
+        pTextarea 
+        formControlName="scoreRangeDescription"
+        style="resize: none; width: 100%;"
+        [rows]="4"
+        [class.ng-invalid]="form.get('scoreRangeDescription')?.invalid && form.get('scoreRangeDescription')?.touched"
+        [class.ng-dirty]="form.get('scoreRangeDescription')?.dirty"
+      ></textarea>
+      <small
+        class="p-error"
+        *ngIf="form.get('scoreRangeDescription')?.invalid && form.get('scoreRangeDescription')?.touched"
+      >
+        Score range description is required and must be less than 200 characters
+      </small>
+    </div>
+
+    <div class="field-checkbox">
+      <p-checkbox
+        inputId="isAllowedToEvaluateExceptLead"
+        formControlName="isAllowedToEvaluateExceptLead"
+        [binary]="true"
+      ></p-checkbox>
+      <label for="isAllowedToEvaluateExceptLead">
+        Allow evaluation by non-lead members
+      </label>
+    </div>
+  </form>
+
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      pRipple
+      label="Cancel"
+      icon="pi pi-times"
+      class="p-button-text"
+      (click)="onHide()"
+    ></button>
+    <button
+      pButton
+      severity="contrast"
+      label="Save"
+      icon="pi pi-check"
+      [loading]="saving"
+      [disabled]="form.invalid"
+      (click)="onSave()"
+    ></button>
+  </ng-template>
+</p-dialog>

@@ -1,0 +1,51 @@
+<p-dialog
+  [header]="kpi ? 'Edit KPI' : 'Add KPI'"
+  [(visible)]="visible"
+  [modal]="true"
+  [style]="{ width: '450px' }"
+  [draggable]="false"
+  [resizable]="false"
+  (onHide)="onHide()"
+>
+  <form [formGroup]="form" class="kpi-form">
+    <div class="field">
+      <label for="name">Name</label>
+      <input
+        id="name"
+        type="text"
+        pInputText
+        formControlName="name"
+        [class.ng-invalid]="
+          form.get('name')?.invalid && form.get('name')?.touched
+        "
+        [class.ng-dirty]="form.get('name')?.dirty"
+      />
+      <small
+        class="p-error"
+        *ngIf="form.get('name')?.invalid && form.get('name')?.touched"
+      >
+        KPI name is required and must be less than 50 characters
+      </small>
+    </div>
+  </form>
+
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      pRipple
+      label="Cancel"
+      icon="pi pi-times"
+      class="p-button-text"
+      (click)="onHide()"
+    ></button>
+    <button
+      pButton
+      severity="contrast"
+      label="Save"
+      icon="pi pi-check"
+      [loading]="saving"
+      [disabled]="form.invalid"
+      (click)="onSave()"
+    ></button>
+  </ng-template>
+</p-dialog>

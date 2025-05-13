@@ -1,0 +1,61 @@
+<div class="role-assignments">
+  <div class="header">
+    <h2>Users with Unassigned Roles</h2>
+  </div>
+
+  <p-table
+    [value]="users"
+    [loading]="loading"
+    [paginator]="true"
+    [rows]="10"
+    [showCurrentPageReport]="true"
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+    [rowsPerPageOptions]="[10, 25, 50]"
+    styleClass="p-datatable-sm"
+    [tableStyle]="{ 'min-width': '50rem' }"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Email</th>
+        <th>Role</th>
+        <th>Actions</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-user>
+      <tr>
+        <td>{{ user.email }}</td>
+        <td>{{ user.roleName }}</td>
+        <td>
+          <div class="actions">
+            <p-button
+              icon="pi pi-user"
+              label="Create Profile"
+              severity="contrast"
+              variant="outlined"
+              (onClick)="openProfileModal(user)"
+            ></p-button>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="3" class="text-center">
+          <div class="empty-message">
+            <i class="pi pi-users" style="font-size: 2rem"></i>
+            <p>No users found without assigned roles</p>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
+
+<app-user-profile-modal
+  [visible]="profileModalVisible"
+  [employee]="selectedEmployee"
+  (visibleChange)="onProfileModalHide()"
+  (save)="onSaveEmployee($event)">
+</app-user-profile-modal>
+
+<p-toast></p-toast>

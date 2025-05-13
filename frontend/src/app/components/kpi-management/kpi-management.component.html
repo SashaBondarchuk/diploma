@@ -1,0 +1,90 @@
+<div class="kpi-management">
+  <div class="header">
+    <h2>KPI Management</h2>
+    <div class="header-actions">
+      <span class="p-input-icon-left search-input">
+        <i class="pi pi-search"></i>
+        <input
+          type="text"
+          pInputText
+          [formControl]="searchControl"
+          placeholder="Search KPIs..."
+        />
+      </span>
+      <p-button
+        label="Add KPI"
+        icon="pi pi-plus"
+        severity="contrast"
+        variant="outlined"
+        (onClick)="openAddDialog()"
+      ></p-button>
+    </div>
+  </div>
+
+  <p-table
+    [value]="filteredKpis"
+    [loading]="loading"
+    [paginator]="true"
+    [rows]="5"
+    [showCurrentPageReport]="true"
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+    [rowsPerPageOptions]="[5, 10, 20]"
+    styleClass="p-datatable-sm"
+    [tableStyle]="{ 'min-width': '50rem' }"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th>KPI Name</th>
+        <th style="width: 150px">Actions</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-kpi>
+      <tr>
+        <td>{{ kpi.name }}</td>
+        <td>
+          <div class="actions">
+            <p-button
+              icon="pi pi-pencil"
+              (onClick)="openEditDialog(kpi)"
+              [outlined]="true"
+              styleClass="p-button"
+            ></p-button>
+            <p-button
+              icon="pi pi-trash"
+              (onClick)="confirmDelete(kpi)"
+              [outlined]="true"
+              severity="danger"
+              styleClass="p-button"
+            ></p-button>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="2">
+          <div class="empty-message">
+            <i class="pi pi-inbox" style="font-size: 3rem"></i>
+            <p>No KPIs found</p>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <app-kpi-modal
+    [(visible)]="showKpiModal"
+    [kpi]="selectedKpi"
+    (visibleChange)="onKpiModalHide()"
+    (save)="onSaveKpi($event)"
+  ></app-kpi-modal>
+
+  <p-confirmDialog
+    [acceptLabel]="'Delete'"
+    [rejectLabel]="'Cancel'"
+    [acceptButtonStyleClass]="'p-button-danger p-button-outlined'"
+    [rejectButtonStyleClass]="'p-button p-button-text'"
+    [icon]="'pi pi-trash'"
+  ></p-confirmDialog>
+  <p-toast></p-toast>
+</div>

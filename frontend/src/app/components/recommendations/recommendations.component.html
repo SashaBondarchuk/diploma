@@ -1,0 +1,116 @@
+<div class="recommendations-management">
+  <div class="header">
+    <h2>Recommendations</h2>
+    <div class="header-actions">
+      <span class="p-input-icon-left search-input">
+        <i class="pi pi-search"></i>
+        <input
+          type="text"
+          pInputText
+          [formControl]="searchControl"
+          placeholder="Search recommendations..."
+        />
+      </span>
+      <p-button
+        *ngIf="canCreate"
+        label="Create Recommendation"
+        icon="pi pi-plus"
+        severity="contrast"
+        variant="outlined"
+        (onClick)="openAddDialog()"
+      ></p-button>
+    </div>
+  </div>
+
+  <p-table
+    [value]="filteredRecommendations"
+    [loading]="loading"
+    [paginator]="true"
+    [rows]="5"
+    [showCurrentPageReport]="true"
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+    [rowsPerPageOptions]="[5, 10, 20]"
+    styleClass="p-datatable-sm"
+    [tableStyle]="{ 'min-width': '50rem' }"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Employee</th>
+        <th>Recommendation</th>
+        <th>Created At</th>
+        <th>Visibility</th>
+        <th style="width: 100px">Actions</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-recommendation>
+      <tr>
+        <td>
+          <div class="employee-info">
+            <p-avatar
+              *ngIf="recommendation.employee.avatar; else defaultIcon"
+              [image]="formatUserAvatar(recommendation.employee.avatar)"
+              shape="circle"
+              size="normal"
+              class="avatar"
+              tooltipPosition="bottom"
+              [routerLink]="['/home/employee-profile', recommendation.employee.id]"
+            />
+            <ng-template #defaultIcon>
+              <p-avatar
+                icon="pi pi-user"
+                shape="circle"
+                size="normal"
+                class="avatar"
+                tooltipPosition="bottom"
+                [routerLink]="['/home/employee-profile', recommendation.employee.id]"
+              />
+            </ng-template>
+            <a [routerLink]="['/home/employee-profile', recommendation.employee.id]" class="employee-link">
+              <span>{{ recommendation.employee.firstName }} {{ recommendation.employee.lastName }}</span>
+            </a>
+          </div>
+        </td>
+        <td>
+          <div class="recommendation-text">
+            {{ recommendation.recommendationText | slice:0:100 }}{{ recommendation.recommendationText.length > 100 ? '...' : '' }}
+          </div>
+        </td>
+        <td>{{ recommendation.createdAt | date:'medium' }}</td>
+        <td>
+          <span class="visibility-badge" [class.visible]="recommendation.isVisibleToEmployee">
+            {{ recommendation.isVisibleToEmployee ? 'Visible' : 'Hidden' }}
+          </span>
+        </td>
+        <td>
+          <div class="actions">
+            <p-button
+              icon="pi pi-eye"
+              (onClick)="viewRecommendation(recommendation)"
+              [outlined]="true"
+              styleClass="p-button"
+            ></p-button>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="5">
+          <div class="empty-message">
+            <i class="pi pi-comments" style="font-size: 3rem"></i>
+            <p>No recommendations found</p>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <app-recommendation-modal
+    [(visible)]="showRecommendationModal"
+    [employees]="employees"
+    (visibleChange)="onRecommendationModalHide()"
+    (save)="onSaveRecommendation($event)"
+  ></app-recommendation-modal>
+
+  <p-toast></p-toast>
+</div>

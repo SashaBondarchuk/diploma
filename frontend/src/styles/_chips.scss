@@ -1,0 +1,93 @@
+.role-chip,
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  text-align: center;
+  white-space: nowrap;
+
+  &.role-admin {
+    background-color: #d8e6fa;
+    color: #2f629c;
+    border: 1px solid #b6ccfc;
+  }
+
+  &.role-special {
+    background-color: #fdf4ff;
+    color: #93639c;
+    border: 1px solid #f7d7f7;
+  }
+
+  &.role-lead {
+    background-color: #faf7e4;
+    color: #aa6439;
+    border: 1px solid #f7d4a7;
+  }
+
+  &.role-member {
+    background-color: #f3fcf7;
+    color: #2d7448;
+    border: 1px solid #addfc0;
+  }
+
+  &.role-default {
+    background-color: #f5f5fd;
+    color: #7081a0;
+    border: 1px solid #d2d2d3;
+  }
+}
+
+.permission-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.permission-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  background-color: #f4f4f5;
+  color: #374151;
+  white-space: nowrap;
+
+  &.permission-base {
+    background-color: #ececec;
+    color: #374151;
+    border: 1px solid #d3d4d4;
+  }
+
+  &.permission-admin {
+    background-color: #f5f9ff;
+    color: #4b81be;
+    border: 1px solid #d0dfff;
+  }
+
+  &.permission-special {
+    background-color: #fdf4ff;
+    color: #93639c;
+    border: 1px solid #f7d7f7;
+  }
+
+  &.permission-lead {
+    background-color: #faf7e4;
+    color: #aa6439;
+    border: 1px solid #f7d4a7;
+  }
+
+  &.permission-member {
+    background-color: #f3fcf7;
+    color: #2d7448;
+    border: 1px solid #addfc0;
+  }
+
+  &.permission-default {
+    background-color: #f5f5fd;
+    color: #96a0b1;
+    border: 1px solid #d2d2d3;
+  }
+}
