@@ -11,9 +11,10 @@ public class TeamsRepository : BaseRepository<Team>, ITeamsRepository
     {
     }
 
-    public Task<List<Team>> GetAllWithEmployeesAsync(CancellationToken cancellationToken)
+    public Task<List<Team>> GetAllWithTeamLeadAsync(CancellationToken cancellationToken)
     {
-        return GetWithDetailsInternal()
+        return _dbSet
+            .Include(e => e.TeamLead)
             .AsNoTracking()
             .ToListAsync(cancellationToken);
     }

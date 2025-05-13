@@ -78,7 +78,14 @@ public class KPIMetricsService(IKPIMetricsRepository kPIMetricsRepository) : IKP
             throw new InvalidOperationException($"No KPI metric with Id={id} found.");
         }
 
-        kPIMetricsRepository.Delete(kPIMetricToDelete);
-        await kPIMetricsRepository.SaveChangesAsync(cancellationToken);
+        try
+        {
+            kPIMetricsRepository.Delete(kPIMetricToDelete);
+            await kPIMetricsRepository.SaveChangesAsync(cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException($"Failed to delete KPI metric with Id={id}. It might be in use by other entities.", ex);
+        }
     }
 }

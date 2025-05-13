@@ -37,8 +37,6 @@ public class Program
             .AllowAnyMethod()
             .AllowAnyOrigin());
 
-        app.UseHttpsRedirection();
-
         app.UseAuthentication();
         app.UseAuthorization();
 

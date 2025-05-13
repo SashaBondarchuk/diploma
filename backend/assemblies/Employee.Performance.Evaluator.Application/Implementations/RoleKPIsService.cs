@@ -140,7 +140,14 @@ public class RoleKPIsService(
             throw new InvalidOperationException("The RoleKPI does not exist.");
         }
 
-        roleKPIsRepository.Delete(roleKPIToDelete);
-        await roleKPIsRepository.SaveChangesAsync(cancellationToken);
+        try
+        {
+            roleKPIsRepository.Delete(roleKPIToDelete);
+            await roleKPIsRepository.SaveChangesAsync(cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException($"Failed to delete RoleKPI with Id={roleId} and KpiId={kpiId}. It might be in use by other entities.", ex);
+        }
     }
 }

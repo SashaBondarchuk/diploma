@@ -9,7 +9,7 @@ public class TeamsService(ITeamsRepository teamsRepository) : ITeamsService
 {
     public async Task<List<TeamViewModel>> GetAllTeamsAsync(CancellationToken cancellationToken)
     {
-        var teams = await teamsRepository.GetAllWithEmployeesAsync(cancellationToken);
+        var teams = await teamsRepository.GetAllWithTeamLeadAsync(cancellationToken);
 
         return [.. teams.Select(t => TeamViewModel.MapFromDbModel(t))];
     }

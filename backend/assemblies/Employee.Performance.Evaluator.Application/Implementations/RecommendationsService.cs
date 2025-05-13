@@ -28,7 +28,7 @@ public class RecommendationsService(
 
     public async Task<RecommendationViewModel?> GetRecommendationByIdAsync(int id, CancellationToken cancellationToken)
     {
-        var recommendation = await recomendationsRepository.GetByIdAsync(id, cancellationToken);
+        var recommendation = await recomendationsRepository.GetByIdWithDetailsAsync(id, cancellationToken);
 
         return recommendation != null ? RecommendationViewModel.MapFromDbModel(recommendation) : null;
     }

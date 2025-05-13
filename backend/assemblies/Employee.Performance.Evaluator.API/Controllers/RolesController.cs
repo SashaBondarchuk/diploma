@@ -15,7 +15,7 @@ public class RolesController(
     IRolesService rolesService) : ControllerBase
 {
     [HttpGet]
-    [HasPermission(UserPermission.ManageRoles)]
+    [HasPermission(UserPermission.Base)]
     [ProducesResponseType(typeof(List<Role>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]

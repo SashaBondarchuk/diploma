@@ -40,7 +40,7 @@ public class UsersController(
 
     [HttpGet("{id}")]
     [HasPermission(UserPermission.ManageEmployees)]
-    [ProducesResponseType(typeof(UserViewModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(UserPartialViewModel), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetUserById(int id, CancellationToken cancellationToken)

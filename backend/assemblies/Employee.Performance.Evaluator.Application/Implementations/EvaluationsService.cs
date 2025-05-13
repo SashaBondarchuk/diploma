@@ -39,7 +39,7 @@ public class EvaluationsService(
         var evaluatorUser = userGetter.GetCurrentUserOrThrow();
         var evaluatorEmployee = await employeesRepository.GetByUserIdAsync(evaluatorUser.Id, cancellationToken);
 
-        if (evaluationSession.Employee!.TeamId != evaluatorEmployee!.TeamId)
+        if (evaluationSession.Employee!.TeamId != evaluatorEmployee!.TeamId) //manager access
         {
             throw new InvalidOperationException($"Evaluator with Id={evaluatorEmployee.Id} is not in the same team as the evaluated employee with Id={evaluationSession.Employee.Id}.");
         }

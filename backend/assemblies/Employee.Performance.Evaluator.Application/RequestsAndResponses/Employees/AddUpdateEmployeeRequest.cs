@@ -11,7 +11,7 @@ public class AddUpdateEmployeeRequest
     public int TeamId { get; set; }
     public bool IsTeamLead { get; set; }
     public int UserId { get; set; }
-    public byte[]? Avatar { get; set; }
+    public string? Avatar { get; set; }
 
     public int RoleId { get; set; }
 
@@ -25,7 +25,11 @@ public class AddUpdateEmployeeRequest
             BirthDate = request.BirthDate,
             TeamId = request.TeamId,
             UserId = request.UserId,
-            Avatar = request.Avatar
+            Avatar = string.IsNullOrEmpty(request.Avatar)
+                ? null
+                : Convert.FromBase64String(
+                    request.Avatar.Split(',').Last()
+                )
         };
     }
 }

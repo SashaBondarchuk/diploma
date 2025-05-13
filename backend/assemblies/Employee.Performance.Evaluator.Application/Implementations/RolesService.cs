@@ -91,7 +91,14 @@ public class RolesService(
             throw new InvalidOperationException($"No role with Id={id} found.");
         }
 
-        rolesRepository.Delete(roleToDelete);
-        await rolesRepository.SaveChangesAsync(cancellationToken);
+        try
+        {
+            rolesRepository.Delete(roleToDelete);
+            await rolesRepository.SaveChangesAsync(cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException($"Failed to delete role with Id={id}. It might be in use by other entities.", ex);
+        }
     }
 }

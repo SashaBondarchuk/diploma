@@ -52,6 +52,7 @@ public class EmployeeRepository(AppDbContext context)
     {
         return _dbSet
             .Include(e => e.Team)
+                .ThenInclude(e => e!.TeamLead)
             .Include(e => e.User)
                 .ThenInclude(e => e!.Role)
                 .ThenInclude(e => e!.Permissions);

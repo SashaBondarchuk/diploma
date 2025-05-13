@@ -90,8 +90,8 @@ public static class ModelBuilderExtensions
             entity.HasKey(e => new { e.RoleId, e.KpiId });
             entity.Property(e => e.Weight).HasColumnType("decimal(5, 4)").IsRequired();
 
-            entity.HasOne(e => e.Role).WithMany().HasForeignKey(e => e.RoleId);
-            entity.HasOne(e => e.KpiMetric).WithMany().HasForeignKey(e => e.KpiId);
+            entity.HasOne(e => e.Role).WithMany().HasForeignKey(e => e.RoleId).OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(e => e.KpiMetric).WithMany().HasForeignKey(e => e.KpiId).OnDelete(DeleteBehavior.Restrict);
         });
 
         modelBuilder.Entity<EvaluationSession>(entity =>
