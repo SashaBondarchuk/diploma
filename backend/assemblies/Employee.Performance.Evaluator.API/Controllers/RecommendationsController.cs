@@ -39,7 +39,7 @@ public class RecommendationsController(
     }
 
     [HttpGet("{id}")]
-    [HasPermission(UserPermission.CreateRecommendations)]
+    [HasPermission(UserPermission.Base)]
     [ProducesResponseType(typeof(RecommendationViewModel), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -55,6 +55,11 @@ public class RecommendationsController(
             }
 
             return Ok(recommendation);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            logger.LogError(ex, "Unauthorized access to recommendation with Id={Id}", id);
+            return StatusCode((int)HttpStatusCode.Forbidden, ex.Message);
         }
         catch (Exception ex)
         {
@@ -114,6 +119,35 @@ public class RecommendationsController(
         catch (Exception ex)
         {
             logger.LogError(ex, "Failed to add recommendation due to an unexpected error");
+            return StatusCode((int)HttpStatusCode.InternalServerError, ex);
+        }
+    }
+
+    [HttpPut("{id}")]
+    [HasPermission(UserPermission.CreateRecommendations)]
+    [ProducesResponseType(typeof(RecommendationViewModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> UpdateRecommendation(int id, [FromBody] AddRecommendationRequest updateRecommendationRequest, CancellationToken cancellationToken)
+    {
+        if (updateRecommendationRequest == null)
+        {
+            return BadRequest("UpdateRecommendationRequest cannot be null.");
+        }
+
+        try
+        {
+            var recommendation = await recommendationsService.UpdateRecommendationAsync(id, updateRecommendationRequest, cancellationToken);
+            return Ok(recommendation);
+        }
+        catch (InvalidOperationException ex)
+        {
+            logger.LogError(ex, "Failed to update recommendation due to invalid operation");
+            return BadRequest(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to update recommendation due to an unexpected error");
             return StatusCode((int)HttpStatusCode.InternalServerError, ex);
         }
     }

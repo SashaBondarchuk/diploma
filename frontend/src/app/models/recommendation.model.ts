@@ -8,3 +8,10 @@ export interface Recommendation {
   isVisibleToEmployee: boolean;
   employee: EmployeePartial;
 }
+
+export interface UpdateRecommendationRequest {
+  employeeId: number;
+  recommendationText: string;
+  isVisibleToEmployee: boolean;
+}
+

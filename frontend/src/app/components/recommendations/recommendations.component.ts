@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { SharedModule } from '@app/shared/shared.module';
 import { RecommendationService } from '@app/services/recommendation.service';
 import { debounceTime, distinctUntilChanged, Subject, takeUntil } from 'rxjs';
-import { Recommendation } from '@app/models/recommendation.model';
+import { Recommendation, UpdateRecommendationRequest } from '@app/models/recommendation.model';
 import { MessageService } from 'primeng/api';
 import { FormControl } from '@angular/forms';
 import { AuthService } from '@app/services/auth.service';
@@ -26,8 +26,9 @@ export class RecommendationsComponent implements OnInit, OnDestroy {
   loading = false;
   showRecommendationModal = false;
   searchControl = new FormControl('');
-  canCreate = false;
+  canManage = false;
   employees: Employee[] = [];
+  selectedRecommendation: Recommendation | null = null;
 
   private destroy$ = new Subject<void>();
 
@@ -43,7 +44,7 @@ export class RecommendationsComponent implements OnInit, OnDestroy {
     this.checkPermissions();
     this.loadRecommendations();
     this.setupSearch();
-    if (this.canCreate) {
+    if (this.canManage) {
       this.loadEmployees();
     }
   }
@@ -55,7 +56,7 @@ export class RecommendationsComponent implements OnInit, OnDestroy {
 
   loadRecommendations(): void {
     this.loading = true;
-    const request$ = this.canCreate
+    const request$ = this.canManage
       ? this.recommendationService.getAllRecommendations()
       : this.recommendationService.getMyRecommendations();
 
@@ -91,37 +92,67 @@ export class RecommendationsComponent implements OnInit, OnDestroy {
     this.showRecommendationModal = true;
   }
 
-  onRecommendationModalHide(): void {
-    this.showRecommendationModal = false;
+  openEditDialog(recommendation: Recommendation): void {
+    this.selectedRecommendation = recommendation;
+    this.showRecommendationModal = true;
   }
 
-  onSaveRecommendation(recommendation: {
-    employeeId: number;
-    recommendationText: string;
-    isVisibleToEmployee: boolean;
-  }): void {
-    this.recommendationService
-      .createRecommendation(recommendation)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: () => {
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Success',
-            detail: 'Recommendation created successfully',
-          });
-          this.loadRecommendations();
-          this.showRecommendationModal = false;
-        },
-        error: (error: Error) => {
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: 'Failed to create recommendation',
-          });
-          this.showRecommendationModal = false;
-        },
-      });
+  onSaveRecommendation(recommendation: UpdateRecommendationRequest): void {
+    if (this.selectedRecommendation) {
+      recommendation.employeeId = this.selectedRecommendation.employeeId;
+      this.recommendationService
+        .updateRecommendation(this.selectedRecommendation.id, recommendation)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: () => {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Success',
+              detail: 'Recommendation updated successfully',
+            });
+            this.loadRecommendations();
+            this.showRecommendationModal = false;
+            this.selectedRecommendation = null;
+          },
+          error: (error: Error) => {
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: 'Failed to update recommendation',
+            });
+            this.showRecommendationModal = false;
+            this.selectedRecommendation = null;
+          },
+        });
+    } else {
+      this.recommendationService
+        .createRecommendation(recommendation)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: () => {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Success',
+              detail: 'Recommendation created successfully',
+            });
+            this.loadRecommendations();
+            this.showRecommendationModal = false;
+          },
+          error: (error: Error) => {
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: 'Failed to create recommendation',
+            });
+            this.showRecommendationModal = false;
+          },
+        });
+    }
+  }
+
+  onRecommendationModalHide(): void {
+    this.showRecommendationModal = false;
+    this.selectedRecommendation = null;
   }
 
   viewRecommendation(recommendation: Recommendation): void {
@@ -154,7 +185,7 @@ export class RecommendationsComponent implements OnInit, OnDestroy {
   }
 
   private checkPermissions(): void {
-    this.canCreate = this.authService.hasPermission(UserPermission.CreateRecommendations);
+    this.canManage = this.authService.hasPermission(UserPermission.CreateRecommendations);
   }
 
   formatUserAvatar(avatar: string | null): string {

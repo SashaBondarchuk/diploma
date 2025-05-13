@@ -67,6 +67,7 @@
 
       .avatar {
         cursor: pointer;
+        flex-shrink: 0;
       }
 
       .member-link {

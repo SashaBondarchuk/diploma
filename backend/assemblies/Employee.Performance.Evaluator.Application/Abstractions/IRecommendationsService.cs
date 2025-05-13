@@ -11,4 +11,6 @@ public interface IRecommendationsService
     Task<IEnumerable<RecommendationPartialViewModel>> GetRecommendationsForCurrentEmployeeAsync(CancellationToken cancellationToken);
 
     Task<RecommendationViewModel> AddRecommendationAsync(AddRecommendationRequest addRecommendationRequest, CancellationToken cancellationToken);
+
+    Task<RecommendationViewModel> UpdateRecommendationAsync(int id, AddRecommendationRequest updateRecommendationRequest, CancellationToken cancellationToken);
 }

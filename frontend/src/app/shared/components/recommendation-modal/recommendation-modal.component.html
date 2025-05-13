@@ -1,5 +1,5 @@
 <p-dialog
-  header="Create Recommendation"
+  [header]="recommendation ? 'Edit Recommendation' : 'Create Recommendation'"
   [(visible)]="visible"
   [modal]="true"
   [style]="{ width: '500px' }"

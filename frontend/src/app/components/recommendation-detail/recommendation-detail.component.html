@@ -1,16 +1,26 @@
 <div class="recommendation-detail">
   <div class="header">
     <h2>Recommendation Details</h2>
-    <p-button
-      icon="pi pi-arrow-left"
-      label="Back"
-      [outlined]="true"
-      [routerLink]="['/home/recommendations']"
-    ></p-button>
+    <div class="header-actions">
+      <p-button
+        *ngIf="canManage"
+        icon="pi pi-pencil"
+        label="Edit"
+        severity="contrast"
+        variant="outlined"
+        (onClick)="openEditDialog()"
+      ></p-button>
+      <p-button
+        icon="pi pi-arrow-left"
+        label="Back"
+        [outlined]="true"
+        [routerLink]="['/home/recommendations']"
+      ></p-button>
+    </div>
   </div>
 
   <div class="content" *ngIf="recommendation; else loading">
-    <div class="employee-info">
+    <div class="employee-info" *ngIf="canManage">
       <p-avatar
         *ngIf="recommendation.employee.avatar; else defaultIcon"
         [image]="formatUserAvatar(recommendation.employee.avatar)"
@@ -46,7 +56,7 @@
           <i class="pi pi-calendar"></i>
           <span>Created on {{ recommendation.createdAt | date:'medium' }}</span>
         </div>
-        <div class="visibility">
+        <div class="visibility" *ngIf="canManage">
           <i class="pi" [class.pi-eye]="recommendation.isVisibleToEmployee" [class.pi-eye-slash]="!recommendation.isVisibleToEmployee"></i>
           <span>{{ recommendation.isVisibleToEmployee ? 'Visible to employee' : 'Hidden from employee' }}</span>
         </div>
@@ -64,6 +74,14 @@
       <p>Loading recommendation...</p>
     </div>
   </ng-template>
+
+  <app-recommendation-modal
+    [(visible)]="showRecommendationModal"
+    [employees]="employees"
+    [recommendation]="recommendation"
+    (visibleChange)="onRecommendationModalHide()"
+    (save)="onSaveRecommendation($event)"
+  ></app-recommendation-modal>
 
   <p-toast></p-toast>
 </div> 

@@ -1,6 +1,6 @@
 <div class="teams-management">
   <div class="header">
-    <h2>Teams Management</h2>
+    <h2>{{ canEdit ? 'Teams Management' : 'All Teams' }}</h2>
     <div class="header-actions">
       <span class="p-input-icon-left search-input">
         <i class="pi pi-search"></i>
@@ -26,10 +26,11 @@
     [value]="filteredTeams"
     [loading]="loading"
     [paginator]="true"
-    [rows]="5"
+    [rows]="8"
+    [paginatorDropdownAppendTo]="'body'"
     [showCurrentPageReport]="true"
     currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-    [rowsPerPageOptions]="[5, 10, 20]"
+    [rowsPerPageOptions]="[8, 15, 20]"
     styleClass="p-datatable-sm"
     [tableStyle]="{ 'min-width': '50rem' }"
   >

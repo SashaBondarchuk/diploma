@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { type Observable, catchError, throwError } from 'rxjs';
 import { environment } from '@environments/environment';
-import type { Recommendation } from '@models/recommendation.model';
+import type { Recommendation, UpdateRecommendationRequest } from '@models/recommendation.model';
 
 interface CreateRecommendationRequest {
   employeeId: number;
@@ -53,4 +53,13 @@ export class RecommendationService {
       })
     );
   }
-} 
+
+  updateRecommendation(id: number, recommendation: UpdateRecommendationRequest): Observable<Recommendation> {
+    return this.http.put<Recommendation>(`${this.apiUrl}/${id}`, recommendation).pipe(
+      catchError((error) => {
+        console.error(`Error updating recommendation with ID ${id}:`, error);
+        return throwError(() => new Error(`Failed to update recommendation with ID ${id}.`));
+      })
+    );
+  }
+}
