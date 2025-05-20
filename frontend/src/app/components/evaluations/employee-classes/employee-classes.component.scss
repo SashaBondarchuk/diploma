@@ -1,0 +1,31 @@
+.employee-classes {
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem;
+    text-align: center;
+    color: var(--text-color-secondary);
+
+    i {
+      margin-bottom: 1.5rem;
+    }
+
+    h2 {
+      margin: 0 0 1rem 0;
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+
+    p {
+      margin: 0;
+      font-size: 1.125rem;
+    }
+  }
+
+  .avatar {
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+}

@@ -26,6 +26,9 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { CheckboxModule } from 'primeng/checkbox';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { TextareaModule } from 'primeng/textarea';
+import { TabsModule } from 'primeng/tabs';
+import { StepperModule } from 'primeng/stepper';
+import { FieldsetModule } from 'primeng/fieldset';
 
 @NgModule({
   declarations: [],
@@ -54,6 +57,9 @@ import { TextareaModule } from 'primeng/textarea';
     CheckboxModule,
     InputNumberModule,
     TextareaModule,
+    TabsModule,
+    StepperModule,
+    FieldsetModule,
   ],
   exports: [
     CommonModule,
@@ -80,6 +86,9 @@ import { TextareaModule } from 'primeng/textarea';
     CheckboxModule,
     InputNumberModule,
     TextareaModule,
+    TabsModule,
+    StepperModule,
+    FieldsetModule,
   ],
   providers: [MessageService, ConfirmationService],
 })

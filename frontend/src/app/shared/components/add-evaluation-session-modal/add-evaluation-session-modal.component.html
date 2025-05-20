@@ -1,0 +1,96 @@
+<p-dialog
+  header="Start New Evaluation Session"
+  [(visible)]="visible"
+  [modal]="true"
+  [style]="{ width: '450px' }"
+  [draggable]="false"
+  [resizable]="false"
+  (onHide)="onHide()"
+>
+  <form [formGroup]="form" class="evaluation-session-form">
+    <div class="field">
+      <label for="employeeId">Employee</label>
+      <p-dropdown
+        id="employeeId"
+        [options]="employees"
+        formControlName="employeeId"
+        optionLabel="fullName"
+        optionValue="id"
+        placeholder="Select an employee"
+        scrollHeight="160px"
+        [class.ng-invalid]="
+          form.get('employeeId')?.invalid && form.get('employeeId')?.touched
+        "
+        [class.ng-dirty]="form.get('employeeId')?.dirty"
+        [filter]="true"
+        filterBy="fullName"
+      ></p-dropdown>
+      <small
+        class="p-error"
+        *ngIf="
+          form.get('employeeId')?.invalid && form.get('employeeId')?.touched
+        "
+      >
+        Employee is required
+      </small>
+    </div>
+
+    <div class="field">
+      <label for="name">Name</label>
+      <input id="name" type="text" pInputText formControlName="name" />
+      <small
+        class="p-error"
+        *ngIf="form.get('name')?.invalid && form.get('name')?.touched"
+      >
+        <span *ngIf="form.get('name')?.errors?.['required']"
+          >Name is required</span
+        >
+        <span *ngIf="form.get('name')?.errors?.['maxlength']"
+          >Name must be less than 100 characters</span
+        >
+      </small>
+    </div>
+
+    <div class="field">
+      <label for="endDate">End Date</label>
+      <p-datepicker
+        id="endDate"
+        formControlName="endDate"
+        [showIcon]="true"
+        [minDate]="allowedEndDate"
+        dateFormat="dd.mm.yy"
+        appendTo="body"
+        [ngClass]="{
+          'ng-invalid ng-dirty':
+            form.get('endDate')?.invalid && form.get('endDate')?.touched
+        }"
+      ></p-datepicker>
+      <small
+        class="p-error"
+        *ngIf="form.get('endDate')?.invalid && form.get('endDate')?.touched"
+      >
+        End date is required and must be in the future
+      </small>
+    </div>
+  </form>
+
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      pRipple
+      label="Cancel"
+      icon="pi pi-times"
+      class="p-button-text"
+      (click)="onHide()"
+    ></button>
+    <button
+      pButton
+      severity="contrast"
+      label="Save"
+      icon="pi pi-check"
+      [loading]="saving"
+      [disabled]="form.invalid"
+      (click)="onSave()"
+    ></button>
+  </ng-template>
+</p-dialog>

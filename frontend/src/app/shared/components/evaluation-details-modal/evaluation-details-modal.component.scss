@@ -1,0 +1,118 @@
+.evaluation-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+
+  .details-grid {
+    display: grid;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .kpi-info {
+    margin-bottom: 0.5rem;
+  }
+
+  .eval-details {
+    margin-bottom: 0.5rem;
+  }
+
+  .detail-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 1rem;
+    padding: 0.25rem 0 0.5rem 0;
+    border-bottom: 1px solid #e3e6ed;
+    &:last-child {
+      border-bottom: none;
+    }
+    .label {
+      min-width: 140px;
+      font-weight: 500;
+      color: #495057;
+    }
+  }
+
+  .score-range-desc {
+    margin-top: 0.5rem;
+    .label {
+      font-weight: 500;
+      color: #495057;
+    }
+    div:last-child {
+      color: #6c757d;
+      font-style: italic;
+      margin-top: 0.25rem;
+    }
+  }
+
+  .role-badge {
+    display: inline-block;
+    padding: 0.2em 0.8em;
+    border-radius: 4px;
+    font-size: 0.95em;
+    font-weight: 600;
+    background: #e3eafc;
+    color: #2a3b5d;
+    border: 1px solid #b8c9df;
+  }
+
+  .evaluator-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.25rem;
+    .font-bold {
+      font-weight: 600;
+      color: #2a3b5d;
+    }
+  }
+
+  .comment {
+    margin-top: 0.25rem;
+    .label {
+      font-weight: 500;
+      color: #495057;
+    }
+    div:last-child {
+      color: #6c757d;
+      font-style: italic;
+      margin-top: 0.25rem;
+      font-size: 1.05rem;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+  }
+
+  :host ::ng-deep .p-fieldset {
+    margin-bottom: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid #dbeafe;
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+  }
+  :host ::ng-deep .p-fieldset-legend {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1976d2;
+    background: #e3eafc;
+    border-radius: 8px 8px 0 0;
+    padding: 0.5rem 1rem;
+  }
+
+  .avatar {
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .employee-name {
+    text-decoration: none;
+    color: #334155;
+    white-space: nowrap;
+
+    &:hover {
+      color: #63666d;
+    }
+  }
+}

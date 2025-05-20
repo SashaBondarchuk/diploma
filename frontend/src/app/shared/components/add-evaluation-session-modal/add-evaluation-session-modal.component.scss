@@ -1,0 +1,47 @@
+.evaluation-session-form {
+  .field {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1.5rem;
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    }
+
+    input,
+    p-dropdown,
+    p-calendar {
+      width: 100%;
+    }
+
+    .p-error {
+      margin-top: 0.25rem;
+      font-size: 0.875rem;
+    }
+  }
+  .avatar {
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .employee-name {
+    text-decoration: none;
+    color: #333333;
+
+    &:hover {
+      color: #63666d;
+    }
+  }
+  .employee-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+
+    .mr-2 {
+      margin-right: 0.5rem;
+    }
+  }
+}

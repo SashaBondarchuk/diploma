@@ -17,6 +17,7 @@ import { Role } from '@app/models/role.model';
 import { forkJoin } from 'rxjs';
 import { AddUpdateEmployeeRequest } from '@models/employee.model';
 import { UserRole } from '@app/shared/user-role';
+import { UserPartial } from '@app/models/user.model';
 
 @Component({
   selector: 'app-user-profile-modal',
@@ -55,9 +56,9 @@ export class UserProfileModalComponent implements OnChanges {
           Validators.pattern(/^\+?[1-9][0-9]{6,14}(?:[\s\-][0-9]+)*$/),
         ],
       ],
-      birthDate: [null, Validators.required],
-      teamId: [null, Validators.required],
-      roleId: [null, Validators.required],
+      birthDate: ['', Validators.required],
+      teamId: ['', Validators.required],
+      roleId: ['', Validators.required],
       isTeamLead: [false],
     });
   }
@@ -96,6 +97,10 @@ export class UserProfileModalComponent implements OnChanges {
 
   private initializeForm(): void {
     if (this.employee) {
+      const roleId =
+        (this.employee.user as UserPartial).roleName === UserRole.Unassigned
+          ? null
+          : (this.employee.user as UserPartial).roleId;
       this.editForm.patchValue({
         firstName: this.employee.firstName || '',
         lastName: this.employee.lastName || '',
@@ -104,7 +109,7 @@ export class UserProfileModalComponent implements OnChanges {
           ? new Date(this.employee.birthDate)
           : null,
         teamId: this.employee.teamId || null,
-        roleId: this.employee.user.roleId || null,
+        roleId: roleId || null,
         isTeamLead: this.employee.isTeamLead || false,
       });
     }

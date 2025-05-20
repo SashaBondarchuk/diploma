@@ -1,0 +1,11 @@
+<div class="evaluations-container">
+  <p-tabView>
+    <p-tabPanel header="Evaluation Sessions">
+      <app-evaluation-sessions [canManageEvaluations]="canManageEvaluations"></app-evaluation-sessions>
+    </p-tabPanel>
+    <p-tabPanel header="Employee Classes">
+      <app-employee-classes></app-employee-classes>
+    </p-tabPanel>
+  </p-tabView>
+</div>
+<p-toast />

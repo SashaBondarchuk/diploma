@@ -1,0 +1,175 @@
+.evaluation-session-details {
+  padding: 1.5rem;
+  background: #fff;
+  border-radius: 6px;
+  box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.14),
+    0 1px 3px 0 rgba(0, 0, 0, 0.12);
+
+  .header {
+    margin-bottom: 2rem;
+    ::ng-deep .p-panel {
+      .p-panel-header {
+        padding: 1rem;
+        .panel-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          width: 100%;
+
+          .header-left {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+          }
+
+          .header-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-right: 1rem;
+          }
+
+          .session-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-right: 0.5rem;
+            color: #000;
+          }
+          .session-id {
+            color: #6c757d;
+            font-size: 1rem;
+          }
+        }
+      }
+      .p-panel-content {
+        padding: 0 1.5rem 1.5rem 1.5rem;
+      }
+    }
+  }
+
+  .session-meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      .label {
+        font-weight: 500;
+        color: #5e5f61;
+      }
+      .employee-info {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        .mr-2 {
+          margin-right: 0.5rem;
+        }
+      }
+    }
+  }
+
+  .avatar {
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .employee-name {
+    text-decoration: none;
+    color: #333333;
+    &:hover {
+      color: #63666d;
+    }
+  }
+
+  .evaluations-section {
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      h3 {
+        margin: 0;
+      }
+      .search-input {
+        position: relative;
+        input {
+          padding-left: 2.5rem;
+          width: 300px;
+        }
+        i {
+          position: absolute;
+          left: 0.75rem;
+          top: 50%;
+          transform: translateY(-50%);
+          color: #6c757d;
+        }
+      }
+    }
+    .evaluator-cell {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      .mr-2 {
+        margin-right: 0.5rem;
+      }
+    }
+    .actions {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: start;
+    }
+  }
+
+  .status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    white-space: nowrap;
+    display: flex;
+    &.finished {
+      background-color: #d1e7dd;
+      color: #0f5132;
+    }
+    &.in-progress {
+      background-color: #cfe2ff;
+      color: #084298;
+    }
+  }
+
+  .empty-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    color: #6c757d;
+    i {
+      margin-bottom: 1rem;
+    }
+    p {
+      margin: 0;
+    }
+  }
+
+  .italic {
+    font-style: italic;
+  }
+
+  .avatar {
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .employee-name {
+    text-decoration: none;
+    color: #334155;
+    white-space: nowrap;
+
+    &:hover {
+      color: #63666d;
+    }
+  }
+}

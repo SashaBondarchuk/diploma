@@ -1,0 +1,249 @@
+<div class="evaluation-session-details" *ngIf="session">
+  <div class="header">
+    <p-panel [toggleable]="true">
+      <ng-template pTemplate="header">
+        <div class="panel-header">
+          <div class="header-left">
+            <span class="session-title">{{ session.name }}</span>
+            <span class="session-id">#{{ session.id }}</span>
+          </div>
+          <div class="header-actions">
+            <p-button
+              *ngIf="!session.evaluationFinishedDate && canManageEvaluations"
+              icon="pi pi-stop-circle"
+              label="End Session"
+              severity="contrast"
+              variant="outlined"
+              (onClick)="confirmEndSession()"
+              styleClass="p-button-warning p-button-sm"
+            ></p-button>
+            <p-button
+              *ngIf="session.evaluationFinishedDate && !session.isReportAvailable"
+              icon="pi pi-file"
+              label="Generate Report"
+              severity="contrast"
+              variant="outlined"
+              [loading]="reportLoading"
+              (onClick)="generateReport()"
+              styleClass="p-button-info p-button-sm"
+            ></p-button>
+            <p-button
+              *ngIf="
+                session.evaluationFinishedDate && session.isReportAvailable
+              "
+              icon="pi pi-download"
+              label="Download Report"
+              severity="contrast"
+              variant="outlined"
+              [loading]="reportLoading"
+              (onClick)="downloadReport()"
+              styleClass="p-button-success p-button-sm"
+            ></p-button>
+            <p-button
+              *ngIf="session.evaluationFinishedDate && canManageEvaluations"
+              label="Create Recommendation"
+              icon="pi pi-plus"
+              severity="contrast"
+              variant="outlined"
+              (onClick)="openClassRecommendationModal()"
+              styleClass="p-button-info p-button-sm"
+            ></p-button>
+          </div>
+        </div>
+      </ng-template>
+      <div class="session-meta">
+        <div class="meta-item">
+          <span class="label">Employee:</span>
+          <div class="employee-info">
+            <p-avatar
+              *ngIf="hasAvatar(session.employee.avatar); else defaultIcon"
+              [image]="formatUserAvatar(session.employee.avatar!)"
+              shape="circle"
+              size="normal"
+              class="avatar"
+              tooltipPosition="bottom"
+              [routerLink]="['/home/employee-profile', session.employee.id]"
+            />
+            <ng-template #defaultIcon>
+              <p-avatar
+                icon="pi pi-user"
+                shape="circle"
+                size="normal"
+                class="avatar"
+                tooltipPosition="bottom"
+                [routerLink]="['/home/employee-profile', session.employee.id]"
+              />
+            </ng-template>
+            <a
+              [routerLink]="['/home/employee-profile', session.employee.id]"
+              class="employee-name"
+            >
+              {{ session.employee.firstName }} {{ session.employee.lastName }}
+            </a>
+          </div>
+        </div>
+        <div class="meta-item">
+          <span class="label">Class:</span>
+          <span
+            [ngClass]="
+              getClassStyleClassname(session.class?.className || 'italic')
+            "
+          >
+            {{ session.class?.className || "Not assigned" }}
+          </span>
+        </div>
+        <div class="meta-item">
+          <span class="label">Start Date:</span>
+          <span>{{ session.startDate | date : "medium" }}</span>
+        </div>
+        <div class="meta-item">
+          <span class="label">End Date:</span>
+          <span>{{ session.endDate | date : "medium" }}</span>
+        </div>
+        <div class="meta-item">
+          <span class="label">Status:</span>
+          <span
+            [class]="
+              'status-badge ' +
+              (session.evaluationFinishedDate ? 'finished' : 'in-progress')
+            "
+          >
+            {{ session.evaluationFinishedDate ? "Finished" : "In Progress" }}
+          </span>
+        </div>
+        <div class="meta-item" *ngIf="session.weightedScore">
+          <span class="label">Weighted Score:</span>
+          <span>{{ session.weightedScore }}</span>
+        </div>
+      </div>
+    </p-panel>
+  </div>
+
+  <div class="evaluations-section">
+    <div class="section-header">
+      <h3>Evaluations</h3>
+      <span class="p-input-icon-left search-input">
+        <i class="pi pi-search"></i>
+        <input
+          type="text"
+          pInputText
+          [value]="searchTerm"
+          (input)="onSearch($event)"
+          placeholder="Search evaluations..."
+        />
+      </span>
+    </div>
+
+    <p-table
+      [value]="filteredEvaluations"
+      [loading]="loading"
+      [paginator]="true"
+      [rows]="4"
+      [showCurrentPageReport]="true"
+      currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+      [rowsPerPageOptions]="[4, 20, 50]"
+      styleClass="p-datatable-sm"
+      [tableStyle]="{ 'min-width': '50rem' }"
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th>KPI</th>
+          <th>Score</th>
+          <th>Score Range</th>
+          <th>Evaluator</th>
+          <th style="width: 100px">Actions</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-evaluation>
+        <tr>
+          <td>{{ evaluation.roleKpi.kpiName }}</td>
+          <td>{{ evaluation.score }}</td>
+          <td>{{ evaluation.roleKpi.scoreRangeDescription }}</td>
+          <td>
+            <div class="evaluator-cell">
+              <p-avatar
+                *ngIf="hasAvatar(evaluation.evaluator.avatar); else defaultIcon"
+                [image]="formatUserAvatar(evaluation.evaluator.avatar!)"
+                shape="circle"
+                size="normal"
+                class="avatar"
+                tooltipPosition="bottom"
+                [routerLink]="[
+                  '/home/employee-profile',
+                  evaluation.evaluator.id
+                ]"
+              />
+              <ng-template #defaultIcon>
+                <p-avatar
+                  icon="pi pi-user"
+                  shape="circle"
+                  size="normal"
+                  class="avatar"
+                  tooltipPosition="bottom"
+                  [routerLink]="[
+                    '/home/employee-profile',
+                    evaluation.evaluator.id
+                  ]"
+                />
+              </ng-template>
+              <a
+                [routerLink]="[
+                  '/home/employee-profile',
+                  evaluation.evaluator.id
+                ]"
+                class="employee-name"
+              >
+                {{ evaluation.evaluator.firstName }}
+                {{ evaluation.evaluator.lastName }}
+              </a>
+            </div>
+          </td>
+          <td>
+            <div class="actions">
+              <p-button
+                icon="pi pi-eye"
+                (onClick)="viewEvaluationDetails(evaluation)"
+                [outlined]="true"
+                styleClass="p-button"
+              ></p-button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="5">
+            <div class="empty-message">
+              <i class="pi pi-list" style="font-size: 3rem"></i>
+              <p>No evaluations found</p>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+  <app-evaluation-details-modal
+    [(visible)]="showEvaluationModal"
+    [evaluation]="selectedEvaluation"
+    (visibleChange)="onEvaluationModalHide()"
+  ></app-evaluation-details-modal>
+
+  <p-confirmDialog
+    [acceptLabel]="'End session'"
+    [rejectLabel]="'Cancel'"
+    [acceptButtonStyleClass]="'p-button-danger p-button-outlined'"
+    [rejectButtonStyleClass]="'p-button p-button-text'"
+    [icon]="'pi pi-stop-circle'"
+  ></p-confirmDialog>
+
+  <p-toast></p-toast>
+
+  <app-recommendation-modal
+    [visible]="showClassRecommendationModal"
+    [employee]="session.employee"
+    [recommendationToCreate]="classRecommendation"
+    (visibleChange)="onClassRecommendationModalVisibleChange($event)"
+    (save)="onSaveClassRecommendation($event)"
+  ></app-recommendation-modal>
+</div>

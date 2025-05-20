@@ -1,0 +1,154 @@
+.evaluation-sessions {
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+
+    .create-btn {
+      white-space: nowrap;
+    }
+
+    .search-filters {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+
+      @media (max-width: 1380px) {
+        flex-wrap: wrap;
+      }
+
+      .search-input {
+        position: relative;
+
+        input {
+          padding-left: 2.5rem;
+          width: 300px;
+        }
+
+        i {
+          position: absolute;
+          left: 0.75rem;
+          top: 50%;
+          transform: translateY(-50%);
+          color: #6c757d;
+        }
+      }
+
+      .employee-filter,
+      .status-filter {
+        width: 200px;
+      }
+
+      .checkbox-filter {
+        display: flex;
+        align-items: center;
+
+        ::ng-deep {
+          .p-checkbox {
+            margin-right: 0.5rem;
+          }
+        }
+      }
+    }
+  }
+
+  ::ng-deep {
+    .p-datatable {
+      .p-datatable-tbody {
+        td {
+          white-space: nowrap;
+
+          &:first-child {
+            max-width: 300px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+        }
+      }
+    }
+  }
+
+  .employee-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    white-space: nowrap;
+
+    .mr-2 {
+      margin-right: 0.5rem;
+    }
+  }
+
+  .avatar {
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .employee-name {
+    text-decoration: none;
+    color: #333333;
+    white-space: nowrap;
+
+    &:hover {
+      color: #63666d;
+    }
+  }
+
+  .employee-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    white-space: nowrap;
+  }
+
+  .status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    white-space: nowrap;
+    display: flex;
+
+    &.finished {
+      background-color: #d1e7dd;
+      color: #0f5132;
+      width: fit-content;
+    }
+
+    &.in-progress {
+      background-color: #cfe2ff;
+      color: #084298;
+      width: fit-content;
+    }
+  }
+
+  .actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: start;
+    white-space: nowrap;
+  }
+
+  .empty-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    color: #6c757d;
+
+    i {
+      margin-bottom: 1rem;
+    }
+
+    p {
+      margin: 0;
+    }
+  }
+
+  .italic {
+    font-style: italic;
+  }
+}

@@ -21,6 +21,15 @@ export class RoleKpiService {
     );
   }
 
+  getKpisToEvaluate(sessionId: number): Observable<RoleKPIModel[]> {
+    return this.http.get<RoleKPIModel[]>(`${this.apiUrl}/session/${sessionId}/kpis-to-evaluate`).pipe(
+      catchError((error) => {
+        console.error('Error fetching KPIs to evaluate:', error);
+        return throwError(() => new Error('Failed to fetch KPIs to evaluate.'));
+      })
+    );
+  }
+
   createRoleKpi(request: {
     roleId: number;
     kpiId: number;

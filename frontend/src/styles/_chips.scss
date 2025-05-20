@@ -91,3 +91,49 @@
     border: 1px solid #d2d2d3;
   }
 }
+
+.employee-class-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  text-align: center;
+  white-space: nowrap;
+
+  &.class-a {
+    background-color: #f3fcf7;
+    color: #2d7448;
+    border: 1px solid #addfc0;
+  }
+
+  &.class-b {
+    background-color: #d8e6fa;
+    color: #2f629c;
+    border: 1px solid #b6ccfc;
+  }
+
+  &.class-c {
+    background-color: #fdf4ff;
+    color: #93639c;
+    border: 1px solid #f7d7f7;
+  }
+
+  &.class-d {
+    background-color: #faf7e4;
+    color: #aa6439;
+    border: 1px solid #f7d4a7;
+  }
+
+  &.class-e {
+    background-color: #fdabab;
+    color: #944747;
+    border: 1px solid #ff7a7a;
+  }
+
+  &.class-default {
+    background-color: #f5f5fd;
+    color: #7081a0;
+    border: 1px solid #d2d2d3;
+  }
+}

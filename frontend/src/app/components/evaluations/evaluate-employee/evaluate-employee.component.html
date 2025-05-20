@@ -1,0 +1,260 @@
+<div class="evaluate-employee">
+  <p-stepper [value]="activeIndex + 1" class="basis-[50rem]">
+    <p-step-list>
+      <p-step [value]="1" [disabled]="activeIndex !== 0">Select Session</p-step>
+      <p-step [value]="2" [disabled]="activeIndex !== 1">Select KPI</p-step>
+      <p-step [value]="3" [disabled]="activeIndex !== 2">Add Evaluation</p-step>
+    </p-step-list>
+  </p-stepper>
+
+  <div class="step-content">
+    <div *ngIf="activeIndex === 0">
+      <h2>Select Evaluation Session</h2>
+      <p-table
+        [value]="pendingSessions"
+        [loading]="loading"
+        [paginator]="true"
+        [rows]="7"
+        [showCurrentPageReport]="true"
+        [paginatorDropdownAppendTo]="'body'"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        [rowsPerPageOptions]="[7, 15, 20]"
+        styleClass="p-datatable-sm"
+        [tableStyle]="{ 'min-width': '65rem' }"
+        [selection]="selectedSession"
+        (onRowSelect)="onSessionSelect($event)"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th style="width: 3rem"></th>
+            <th>Name</th>
+            <th>Employee</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-session>
+          <tr [pSelectableRow]="session">
+            <td>
+              <p-tableRadioButton [value]="session"></p-tableRadioButton>
+            </td>
+            <td>{{ session.name }}</td>
+            <td>
+              <div class="employee-cell">
+                <p-avatar
+                  *ngIf="hasAvatar(session.employee.avatar); else defaultIcon"
+                  [image]="formatUserAvatar(session.employee.avatar!)"
+                  shape="circle"
+                  size="normal"
+                  class="avatar"
+                  tooltipPosition="bottom"
+                  [routerLink]="['/home/employee-profile', session.employee.id]"
+                />
+                <ng-template #defaultIcon>
+                  <p-avatar
+                    icon="pi pi-user"
+                    shape="circle"
+                    size="normal"
+                    class="avatar"
+                    tooltipPosition="bottom"
+                    [routerLink]="[
+                      '/home/employee-profile',
+                      session.employee.id
+                    ]"
+                  />
+                </ng-template>
+                <span
+                  class="employee-name avatar"
+                  [routerLink]="['/home/employee-profile', session.employee.id]"
+                >
+                  {{ session.employee.firstName }}
+                  {{ session.employee.lastName }}
+                </span>
+              </div>
+            </td>
+            <td>{{ session.startDate | date : "medium" }}</td>
+            <td>{{ session.endDate | date : "medium" }}</td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="6">
+              <div class="empty-message">
+                <i class="pi pi-list" style="font-size: 3rem"></i>
+                <p>No pending evaluation sessions found</p>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+
+    <div *ngIf="activeIndex === 1">
+      <h2>Select KPI to Evaluate</h2>
+      <div
+        *ngIf="remainingKpisCount > 0; else allEvaluated"
+        class="kpi-selection"
+      >
+        <p-table
+          [value]="roleKpis"
+          [loading]="loading"
+          [paginator]="true"
+          [rows]="7"
+          [showCurrentPageReport]="true"
+          [paginatorDropdownAppendTo]="'body'"
+          currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+          [rowsPerPageOptions]="[7, 15, 20]"
+          styleClass="p-datatable-sm"
+          [tableStyle]="{ 'min-width': '65rem' }"
+          [selection]="selectedRoleKpi"
+          (onRowSelect)="onRoleKpiSelect($event)"
+        >
+          <ng-template pTemplate="header">
+            <tr>
+              <th style="width: 3rem"></th>
+              <th>KPI Name</th>
+              <th>Score Range</th>
+              <th>Description</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-roleKpi>
+            <tr [pSelectableRow]="roleKpi">
+              <td>
+                <p-tableRadioButton [value]="roleKpi"></p-tableRadioButton>
+              </td>
+              <td>{{ roleKpi.kpiName }}</td>
+              <td>{{ roleKpi.minScore }} - {{ roleKpi.maxScore }}</td>
+              <td>{{ roleKpi.scoreRangeDescription }}</td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="5">
+                <div class="empty-message">
+                  <i class="pi pi-list" style="font-size: 3rem"></i>
+                  <p>No KPIs available for evaluation</p>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+      <ng-template #allEvaluated>
+        <div class="all-evaluated">
+          <i class="pi pi-check-circle" style="font-size: 3rem"></i>
+          <h3>All KPIs Evaluated</h3>
+          <p>You have completed all evaluations for this session.</p>
+          <p-button
+            label="Start New Evaluation"
+            icon="pi pi-plus"
+            (onClick)="resetStepper()"
+            styleClass="p-button"
+          ></p-button>
+        </div>
+      </ng-template>
+    </div>
+
+    <div *ngIf="activeIndex === 2">
+      <h2>Add Evaluation</h2>
+      <form [formGroup]="evaluationForm" class="evaluation-form">
+        <div class="field">
+          <label for="score">Score</label>
+          <p-inputNumber
+            id="score"
+            formControlName="score"
+            [min]="selectedRoleKpi?.minScore"
+            [max]="selectedRoleKpi?.maxScore"
+            [showButtons]="true"
+            buttonLayout="horizontal"
+            spinnerMode="horizontal"
+            decrementButtonClass="p-button-secondary"
+            incrementButtonClass="p-button-secondary"
+            incrementButtonIcon="pi pi-plus"
+            decrementButtonIcon="pi pi-minus"
+          ></p-inputNumber>
+          <small
+            class="p-error"
+            *ngIf="
+              evaluationForm.get('score')?.invalid &&
+              evaluationForm.get('score')?.touched
+            "
+          >
+            <span *ngIf="evaluationForm.get('score')?.errors?.['required']"
+              >Score is required</span
+            >
+            <span
+              *ngIf="evaluationForm.get('score')?.errors?.['min'] || evaluationForm.get('score')?.errors?.['max']"
+              >Score must be between {{ selectedRoleKpi?.minScore }} and
+              {{ selectedRoleKpi?.maxScore }}</span
+            >
+          </small>
+        </div>
+
+        <div class="field">
+          <label for="comment">Comment (Optional)</label>
+          <textarea
+            id="comment"
+            pInputTextarea
+            formControlName="comment"
+            [rows]="5"
+            [autoResize]="true"
+          ></textarea>
+          <small
+            class="p-error"
+            *ngIf="
+              evaluationForm.get('comment')?.invalid &&
+              evaluationForm.get('comment')?.touched
+            "
+          >
+            Comment must be less than 500 characters
+          </small>
+        </div>
+
+        <div class="field">
+          <label>Score Range Description</label>
+          <p class="score-range-description">
+            {{ selectedRoleKpi?.scoreRangeDescription }}
+          </p>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="step-actions">
+    <p-button
+      *ngIf="activeIndex > 0"
+      label="Back"
+      icon="pi pi-arrow-left"
+      (onClick)="prevStep()"
+      [outlined]="true"
+      styleClass="p-button"
+    ></p-button>
+    <p-button
+      *ngIf="activeIndex < 2"
+      label="Next"
+      icon="pi pi-arrow-right"
+      iconPos="right"
+      severity="contrast"
+      variant="outlined"
+      (onClick)="nextStep()"
+      [loading]="roleKpiLoading"
+      [disabled]="
+        !roleKpiLoading &&
+        (activeIndex === 0 && (!selectedSession || remainingKpisCount === 0)) ||
+        (activeIndex === 1 && (!selectedRoleKpi || remainingKpisCount === 0))
+      "
+      styleClass="p-button"
+    ></p-button>
+    <p-button
+      *ngIf="activeIndex === 2"
+      label="Submit"
+      icon="pi pi-check"
+      (onClick)="onSubmitEvaluation()"
+      [disabled]="evaluationForm.invalid"
+      [loading]="loading"
+      styleClass="p-button"
+    ></p-button>
+  </div>
+</div>
+
+<p-toast />

@@ -1,0 +1,171 @@
+<div class="evaluation-sessions">
+  <div class="header">
+    <form [formGroup]="searchForm" class="search-filters">
+      <span class="p-input-icon-left search-input">
+        <i class="pi pi-search"></i>
+        <input
+          type="text"
+          pInputText
+          formControlName="searchTerm"
+          placeholder="Search evaluation sessions..."
+        />
+      </span>
+      <p-dropdown
+        id="employeeId"
+        [options]="employees"
+        formControlName="employeeId"
+        optionLabel="fullName"
+        placeholder="Filter by employee"
+        styleClass="employee-filter"
+        [filter]="true"
+        [showClear]="true"
+        filterBy="fullName"
+        optionValue="id"
+      ></p-dropdown>
+      <div class="checkbox-filter">
+        <p-checkbox
+          formControlName="isFinished"
+          [binary]="true"
+          inputId="isFinished"
+        ></p-checkbox>
+        <label for="isFinished">Show only finished</label>
+      </div>
+    </form>
+    <p-button
+      label="Start New Evaluation Session"
+      icon="pi pi-plus"
+      severity="contrast"
+      variant="outlined"
+      class="create-btn"
+      *ngIf="canManageEvaluations"
+      (onClick)="openAddDialog()"
+    ></p-button>
+  </div>
+
+  <p-table
+    [value]="filteredSessions"
+    [loading]="loading"
+    [paginator]="true"
+    [rows]="7"
+    [showCurrentPageReport]="true"
+    [paginatorDropdownAppendTo]="'body'"
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+    [rowsPerPageOptions]="[7, 15, 20]"
+    styleClass="p-datatable-sm"
+    [tableStyle]="{ 'min-width': '65rem' }"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Name</th>
+        <th>Employee</th>
+        <th>Class</th>
+        <th>Start Date</th>
+        <th>End Date</th>
+        <th>Status</th>
+        <th>Score</th>
+        <th style="width: 150px">Actions</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-session>
+      <tr>
+        <td>{{ session.name }}</td>
+        <td>
+          <div class="employee-cell">
+            <p-avatar
+              *ngIf="hasAvatar(session.employee.avatar); else defaultIcon"
+              [image]="formatUserAvatar(session.employee.avatar!)"
+              shape="circle"
+              size="normal"
+              class="avatar"
+              tooltipPosition="bottom"
+              [routerLink]="['/home/employee-profile', session.employee.id]"
+            />
+            <ng-template #defaultIcon>
+              <p-avatar
+                icon="pi pi-user"
+                shape="circle"
+                size="normal"
+                class="avatar"
+                tooltipPosition="bottom"
+                [routerLink]="['/home/employee-profile', session.employee.id]"
+              />
+            </ng-template>
+            <a
+              [routerLink]="['/home/employee-profile', session.employee.id]"
+              class="employee-name"
+            >
+              {{ session.employee.firstName }} {{ session.employee.lastName }}
+            </a>
+          </div>
+        </td>
+        <td>
+          <span
+            [ngClass]="
+              getClassStyleClassname(session.class?.className || 'italic')
+            "
+          >
+            {{ session.class?.className || "Not assigned" }}
+          </span>
+        </td>
+        <td>{{ session.startDate | date : "medium" }}</td>
+        <td>{{ session.endDate | date : "medium" }}</td>
+        <td>
+          <span
+            [class]="
+              'status-badge ' +
+              (session.evaluationFinishedDate ? 'finished' : 'in-progress')
+            "
+          >
+            {{ session.evaluationFinishedDate ? "Finished" : "In Progress" }}
+          </span>
+        </td>
+        <td>
+          {{ session.weightedScore || "N/A" }}
+        </td>
+        <td>
+          <div class="actions">
+            <p-button
+              icon="pi pi-eye"
+              (onClick)="viewSessionDetails(session)"
+              [outlined]="true"
+              styleClass="p-button"
+            ></p-button>
+            <p-button
+              icon="pi pi-trash"
+              (onClick)="confirmDelete(session)"
+              [outlined]="true"
+              severity="danger"
+              styleClass="p-button"
+            ></p-button>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="8">
+          <div class="empty-message">
+            <i class="pi pi-list" style="font-size: 3rem"></i>
+            <p>No evaluation sessions found</p>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <app-add-evaluation-session-modal
+    [(visible)]="showAddModal"
+    [employees]="employees"
+    (visibleChange)="onAddModalHide()"
+    (save)="onSaveSession($event)"
+  ></app-add-evaluation-session-modal>
+
+  <p-confirmDialog
+    [acceptLabel]="'Delete'"
+    [rejectLabel]="'Cancel'"
+    [acceptButtonStyleClass]="'p-button-danger p-button-outlined'"
+    [rejectButtonStyleClass]="'p-button p-button-text'"
+    [icon]="'pi pi-trash'"
+  ></p-confirmDialog>
+  <p-toast></p-toast>
+</div>

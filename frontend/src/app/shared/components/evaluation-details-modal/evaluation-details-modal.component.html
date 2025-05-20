@@ -1,0 +1,103 @@
+<p-dialog
+  header="Evaluation Details"
+  [(visible)]="visible"
+  [modal]="true"
+  [style]="{ width: '600px' }"
+  [draggable]="false"
+  [resizable]="false"
+  (onHide)="onHide()"
+>
+  <div class="evaluation-details" *ngIf="evaluation">
+    <p-fieldset legend="KPI Information">
+      <div class="details-grid kpi-info">
+        <div class="detail-row">
+          <span class="label">KPI Name:</span>
+          <span>{{ evaluation.roleKpi.kpiName }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Role:</span>
+          <span>
+            <span class="role-badge">
+              {{ evaluation.roleKpi.roleName }}
+            </span>
+          </span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Weight:</span>
+          <span>{{ evaluation.roleKpi.weight * 100 | number : "1.0-2" }}%</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Score Range:</span>
+          <span
+            >{{ evaluation.roleKpi.minScore }} -
+            {{ evaluation.roleKpi.maxScore }}</span
+          >
+        </div>
+      </div>
+      <div class="detail-row score-range-desc">
+        <div class="label">Score Range Description:</div>
+        <div>{{ evaluation.roleKpi.scoreRangeDescription }}</div>
+      </div>
+    </p-fieldset>
+
+    <p-fieldset legend="Evaluation Details" class="mt-4">
+      <div class="details-grid eval-details">
+        <div class="detail-row">
+          <span class="label">Score:</span>
+          <span>{{ evaluation.score }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Evaluator:</span>
+          <div class="evaluator-info mt-3">
+            <p-avatar
+              *ngIf="hasAvatar(evaluation.evaluator.avatar); else defaultIcon"
+              [image]="formatUserAvatar(evaluation.evaluator.avatar!)"
+              shape="circle"
+              size="normal"
+              class="avatar"
+              tooltipPosition="bottom"
+              [routerLink]="['/home/employee-profile', evaluation.evaluator.id]"
+            />
+            <ng-template #defaultIcon>
+              <p-avatar
+                icon="pi pi-user"
+                shape="circle"
+                size="normal"
+                class="avatar"
+                tooltipPosition="bottom"
+                [routerLink]="[
+                  '/home/employee-profile',
+                  evaluation.evaluator.id
+                ]"
+              />
+            </ng-template>
+            <a
+              [routerLink]="['/home/employee-profile', evaluation.evaluator.id]"
+              class="employee-name"
+            >
+              {{ evaluation.evaluator.firstName }}
+              {{ evaluation.evaluator.lastName }}
+            </a>
+          </div>
+        </div>
+        <div class="detail-row">
+          <div class="comment score-range-desc mt-2">
+            <div class="label">Comment:</div>
+            <div>{{ evaluation.comment || "No comment provided" }}</div>
+          </div>
+        </div>
+      </div>
+    </p-fieldset>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      pRipple
+      label="Close"
+      icon="pi pi-times"
+      class="p-button-text"
+      (click)="onHide()"
+    ></button>
+  </ng-template>
+</p-dialog>

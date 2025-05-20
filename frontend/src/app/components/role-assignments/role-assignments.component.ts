@@ -8,7 +8,7 @@ import { AddEditEmployee } from '@models/employee.model';
 import { UserProfileModalComponent } from '@app/shared/components/user-profile-modal/user-profile-modal.component';
 import { User, UserPartial } from '@app/models/user.model';
 import { UserRole } from '@app/shared/user-role';
-import { AddUpdateEmployeeRequest } from '@app/models/requests/add-update-employee.request';
+import { AddUpdateEmployeeRequest } from '@models/employee.model';
 import { MessageService } from 'primeng/api';
 import { EmployeesService } from '@app/services/employees.service';
 import { ToastModule } from 'primeng/toast';
@@ -23,7 +23,7 @@ import { ToastModule } from 'primeng/toast';
 export class RoleAssignmentsComponent implements OnInit, OnDestroy {
   users: UserPartial[] = [];
   loading = true;
-  selectedUser: User | null = null;
+  selectedUser: UserPartial | null = null;
   selectedEmployee: AddEditEmployee | null = null;
   profileModalVisible = false;
 
@@ -44,7 +44,7 @@ export class RoleAssignmentsComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  openProfileModal(user: User): void {
+  openProfileModal(user: UserPartial): void {
     this.selectedUser = user;
     this.profileModalVisible = true;
     this.selectedEmployee = this.getEmployeeToAdd(user);
@@ -110,7 +110,7 @@ export class RoleAssignmentsComponent implements OnInit, OnDestroy {
       });
   }
 
-  private getEmployeeToAdd(user: User): AddEditEmployee {
+  private getEmployeeToAdd(user: UserPartial): AddEditEmployee {
     return {
       user: user,
       userId: user.id,

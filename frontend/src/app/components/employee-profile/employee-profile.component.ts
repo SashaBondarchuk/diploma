@@ -155,6 +155,9 @@ export class EmployeeProfileComponent implements OnInit, OnDestroy {
   }
 
   formatUserAvatar(avatar: string): string {
+    if (avatar.startsWith('data:image/png;base64,')) {
+      return avatar;
+    }
     return `data:image/png;base64,${avatar}`;
   }
 
@@ -209,7 +212,7 @@ export class EmployeeProfileComponent implements OnInit, OnDestroy {
       birthDate: this.employee.birthDate,
       teamId: this.employee.team?.id,
       avatar: this.employee.avatar,
-      isTeamLead: this.isTeamLead,
+      isTeamLead: this.isTeamLead ? this.isTeamLead : false,
     };
 
     this.editDialogVisible = true;

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { ApiService } from './api.service';
 import { catchError, Observable } from 'rxjs';
 import { Employee } from '@models/employee.model';
-import { AddUpdateEmployeeRequest } from '@app/models/requests/add-update-employee.request';
+import { AddUpdateEmployeeRequest } from '@models/employee.model';
 
 @Injectable({
   providedIn: 'root',

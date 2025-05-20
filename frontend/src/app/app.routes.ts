@@ -15,6 +15,9 @@ import { TeamsComponent } from './components/teams/teams.component';
 import { EmployeesComponent } from './components/employees/employees.component';
 import { RecommendationsComponent } from './components/recommendations/recommendations.component';
 import { RecommendationDetailComponent } from './components/recommendation-detail/recommendation-detail.component';
+import { EvaluationsComponent } from './components/evaluations/evaluations.component';
+import { EvaluationSessionDetailsComponent } from './components/evaluations/evaluation-session-details/evaluation-session-details.component';
+import { EvaluateEmployeeComponent } from './components/evaluations/evaluate-employee/evaluate-employee.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -81,6 +84,30 @@ export const routes: Routes = [
       {
         path: 'recommendations/:id',
         component: RecommendationDetailComponent,
+      },
+      {
+        path: 'evaluations',
+        component: EvaluationsComponent,
+        canActivate: [PermissionGuard],
+        data: {
+          requiredPermission: UserPermission.ViewAllEvaluations,
+        },
+      },
+      {
+        path: 'evaluation-session/:id',
+        component: EvaluationSessionDetailsComponent,
+        canActivate: [PermissionGuard],
+        data: {
+          requiredPermission: UserPermission.ViewAllEvaluations,
+        },
+      },
+      {
+        path: 'evaluate-employee',
+        component: EvaluateEmployeeComponent,
+        canActivate: [PermissionGuard],
+        data: {
+          requiredPermission: UserPermission.EvaluateTeamMembers,
+        },
       },
     ],
   },

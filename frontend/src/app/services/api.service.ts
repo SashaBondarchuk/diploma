@@ -1,7 +1,12 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpHeaders,
+  HttpParams,
+  HttpResponse,
+} from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 import { environment } from '@environments/environment';
 
 @Injectable({
@@ -21,6 +26,39 @@ export class ApiService {
     return this.http
       .get<T>(`${this.baseUrl}/${endpoint}`, options)
       .pipe(catchError(this.handleError));
+  }
+
+  getBlob(endpoint: string): Observable<{ blob: Blob; filename: string }> {
+    const options = {
+      observe: 'response' as const,
+      responseType: 'blob' as 'json',
+      headers: new HttpHeaders({
+        Accept: 'application/pdf',
+      }),
+    };
+
+    return this.http.get<Blob>(`${this.baseUrl}/${endpoint}`, options).pipe(
+      map((response) => {
+        const headers = response.headers;
+        const contentDisposition = headers.get('content-disposition');
+        let filename = 'evaluation-report.pdf';
+
+        if (contentDisposition) {
+          const filenameMatch = contentDisposition.match(
+            /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/
+          );
+          if (filenameMatch && filenameMatch[1]) {
+            filename = filenameMatch[1].replace(/['"]/g, '');
+          }
+        }
+
+        return {
+          blob: response.body!,
+          filename: filename,
+        };
+      }),
+      catchError(this.handleError)
+    );
   }
 
   post<T>(endpoint: string, data: any, headers?: HttpHeaders): Observable<T> {
