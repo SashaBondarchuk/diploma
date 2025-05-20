@@ -14,7 +14,7 @@ public class EvaluationsController(
     IEvaluationsService evaluationsService) : ControllerBase
 {
     [HttpGet("session/{sessionId}")]
-    [HasPermission(UserPermission.ManageEvaluations)]
+    [HasPermission(UserPermission.ViewAllEvaluations)]
     [ProducesResponseType(typeof(IEnumerable<EvaluationViewModel>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]

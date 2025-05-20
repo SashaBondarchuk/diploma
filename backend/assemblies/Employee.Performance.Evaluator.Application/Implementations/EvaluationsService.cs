@@ -2,6 +2,7 @@
 using Employee.Performance.Evaluator.Application.Abstractions.Repositories;
 using Employee.Performance.Evaluator.Application.RequestsAndResponses.Evaluations;
 using Employee.Performance.Evaluator.Core.Entities;
+using Employee.Performance.Evaluator.Core.Enums;
 
 namespace Employee.Performance.Evaluator.Application.Implementations;
 
@@ -39,7 +40,8 @@ public class EvaluationsService(
         var evaluatorUser = userGetter.GetCurrentUserOrThrow();
         var evaluatorEmployee = await employeesRepository.GetByUserIdAsync(evaluatorUser.Id, cancellationToken);
 
-        if (evaluationSession.Employee!.TeamId != evaluatorEmployee!.TeamId) //manager access
+        if (evaluationSession.Employee!.TeamId != evaluatorEmployee!.TeamId
+            && !evaluatorUser.Role!.Permissions.Any(p => p.Id == (int)UserPermission.ManageEvaluations))
         {
             throw new InvalidOperationException($"Evaluator with Id={evaluatorEmployee.Id} is not in the same team as the evaluated employee with Id={evaluationSession.Employee.Id}.");
         }

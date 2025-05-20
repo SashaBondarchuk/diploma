@@ -16,7 +16,7 @@ public class EvaluationSessionsController(
     IEvaluationSessionsService evaluationSessionsService) : ControllerBase
 {
     [HttpGet]
-    [HasPermission(UserPermission.ManageEvaluations)]
+    [HasPermission(UserPermission.ViewAllEvaluations)]
     [ProducesResponseType(typeof(List<EvaluationSessionViewModel>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -44,7 +44,7 @@ public class EvaluationSessionsController(
     }
 
     [HttpGet("{id}")]
-    [HasPermission(UserPermission.ManageEvaluations)]
+    [HasPermission(UserPermission.ViewAllEvaluations)]
     [ProducesResponseType(typeof(EvaluationSessionViewModel), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -80,10 +80,11 @@ public class EvaluationSessionsController(
     {
         try
         {
-            var userId = userGetter.GetCurrentUserIdOrThrow();
-            var employee = await employeeService.GetByUserIdAsync(userId, cancellationToken);
+            var currentUser = userGetter.GetCurrentUserOrThrow();
+            var employee = await employeeService.GetByUserIdAsync(currentUser.Id, cancellationToken);
 
-            var evaluationSessions = await evaluationSessionsService.GetOngoingEvaluationsForEmployeeTeamMembersAsync(employee!.Id, cancellationToken);
+            var evaluationSessions = await evaluationSessionsService.GetOngoingEvaluationsForEmployeeAsync(
+                employee!.Id, currentUser, cancellationToken);
 
             if (evaluationSessions == null || evaluationSessions.Count == 0)
             {
@@ -128,7 +129,87 @@ public class EvaluationSessionsController(
         }
     }
 
-    // TODO: end evaluation session enpoint
+    [HttpPost("end/{id}")]
+    [HasPermission(UserPermission.ManageEvaluations)]
+    [ProducesResponseType(typeof(EvaluationSessionViewModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> End(int id, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var evaluationSession = await evaluationSessionsService.EndEvaluationSessionAsync(id, cancellationToken);
+            return Ok(evaluationSession);
+        }
+        catch (InvalidOperationException ex)
+        {
+            logger.LogError(ex, "Failed to end evaluation session due to invalid operation");
+            return BadRequest(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to end evaluation session due to an unexpected error");
+            return StatusCode((int)HttpStatusCode.InternalServerError, ex);
+        }
+    }
+
+    [HttpPost("generate-report/{id}")]
+    [HasPermission(UserPermission.ViewAllEvaluations)]
+    [ProducesResponseType(typeof(EvaluationSessionViewModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GenerateReport(int id, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var report = await evaluationSessionsService.GenerateReportForSessionAsync(id, cancellationToken);
+            return Ok(report);
+        }
+        catch (InvalidOperationException ex)
+        {
+            logger.LogError(ex, "Failed to generate report for evaluation session due to invalid operation");
+            return BadRequest(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to generate report for evaluation session due to an unexpected error");
+            return StatusCode((int)HttpStatusCode.InternalServerError, ex);
+        }
+    }
+
+    [HttpGet("report/{id}")]
+    [HasPermission(UserPermission.ViewAllEvaluations)]
+    [ProducesResponseType(typeof(FileContentResult), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetReport(int id, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var (reportBytes, filename) = await evaluationSessionsService.GetReportAsync(id, cancellationToken);
+
+            if (reportBytes == null || reportBytes.Length == 0)
+            {
+                return BadRequest("Report was not generated.");
+            }
+
+            return File(
+                fileContents: reportBytes,
+                contentType: "application/pdf",
+                fileDownloadName: filename
+            );
+        }
+        catch (InvalidOperationException ex)
+        {
+            logger.LogError(ex, "Failed to get report for evaluation session due to invalid operation");
+            return BadRequest(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to get report for evaluation session due to an unexpected error");
+            return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+        }
+    }
 
     [HttpDelete("{id}")]
     [HasPermission(UserPermission.ManageEvaluations)]

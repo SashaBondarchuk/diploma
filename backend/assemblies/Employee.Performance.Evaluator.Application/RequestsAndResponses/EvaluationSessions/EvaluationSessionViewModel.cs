@@ -14,7 +14,7 @@ public class EvaluationSessionViewModel
     public int EmployeeId { get; set; }
     public int? ClassId { get; set; }
     public decimal? WeightedScore { get; set; }
-    public byte[]? ReportFile { get; set; } = [];
+    public bool IsReportAvailable { get; set; }
 
     public EmployeePartialViewModel? Employee { get; set; }
     public EmployeeClassViewModel? Class { get; set; }
@@ -31,7 +31,7 @@ public class EvaluationSessionViewModel
             EmployeeId = model.EmployeeId,
             ClassId = model.ClassId,
             WeightedScore = model.WeightedScore,
-            ReportFile = model.ReportFile,
+            IsReportAvailable = model.ReportFile != null,
             Employee = EmployeePartialViewModel.MapFromDbModel(model.Employee!),
             Class = model.Class != null ? EmployeeClassViewModel.MapFromDbModel(model.Class) : null
         };

@@ -35,7 +35,8 @@ public class Program
         app.UseCors(opt => opt
             .AllowAnyHeader()
             .AllowAnyMethod()
-            .AllowAnyOrigin());
+            .AllowAnyOrigin()
+            .WithExposedHeaders("Content-Disposition"));
 
         app.UseAuthentication();
         app.UseAuthorization();

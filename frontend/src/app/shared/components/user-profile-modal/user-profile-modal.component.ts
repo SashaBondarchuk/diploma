@@ -15,7 +15,7 @@ import { RoleService } from '@app/services/role.service';
 import { Team } from '@app/models/team.model';
 import { Role } from '@app/models/role.model';
 import { forkJoin } from 'rxjs';
-import { AddUpdateEmployeeRequest } from '@app/models/requests/add-update-employee.request';
+import { AddUpdateEmployeeRequest } from '@models/employee.model';
 import { UserRole } from '@app/shared/user-role';
 
 @Component({

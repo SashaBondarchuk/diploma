@@ -11,6 +11,13 @@ public class EvaluationsRepository : BaseRepository<Evaluation>, IEvaluationsRep
     {
     }
 
+    public Task<List<Evaluation>> GetAllWithDetailsAsync(CancellationToken cancellationToken)
+    {
+        return GetAllWithDetailsInternal()
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
+    }
+
     public Task<List<Evaluation>> GetAllBySessionIdAsync(int sessionId, CancellationToken cancellationToken)
     {
         return GetAllWithDetailsInternal()

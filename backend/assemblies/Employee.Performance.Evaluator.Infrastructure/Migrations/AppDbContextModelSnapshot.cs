@@ -329,10 +329,10 @@ namespace Employee.Performance.Evaluator.Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("MaxScore")
-                        .HasColumnType("decimal(5, 2)");
+                        .HasColumnType("decimal(6, 2)");
 
                     b.Property<decimal>("MinScore")
-                        .HasColumnType("decimal(5, 2)");
+                        .HasColumnType("decimal(6, 2)");
 
                     b.Property<string>("RecommendedActions")
                         .IsRequired()
@@ -462,7 +462,7 @@ namespace Employee.Performance.Evaluator.Infrastructure.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<decimal?>("WeightedScore")
-                        .HasColumnType("decimal(5, 4)");
+                        .HasColumnType("decimal(6, 4)");
 
                     b.HasKey("Id");
 

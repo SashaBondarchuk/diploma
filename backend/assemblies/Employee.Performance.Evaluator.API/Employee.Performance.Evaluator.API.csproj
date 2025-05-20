@@ -21,4 +21,10 @@
     <ProjectReference Include="..\Employee.Performance.Evaluator.Infrastructure\Employee.Performance.Evaluator.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="libwkhtmltox.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

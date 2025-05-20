@@ -15,4 +15,8 @@
     <Folder Include="RequestsAndResponses\Users\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="DinkToPdf" Version="1.0.8" />
+  </ItemGroup>
+   
 </Project>

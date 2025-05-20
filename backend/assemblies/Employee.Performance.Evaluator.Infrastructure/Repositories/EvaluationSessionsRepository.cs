@@ -20,12 +20,14 @@ public class EvaluationSessionsRepository : BaseRepository<EvaluationSession>, I
             .ToListAsync(cancellationToken);
     }
 
-    public Task<List<EvaluationSession>> GetByEmployeesIdsWithDetailsAsync(List<int> employeesIds, bool? isFinished, CancellationToken cancellationToken)
+    public Task<List<EvaluationSession>> GetByEmployeesIdsWithDetailsAsync(List<int>? employeesIds, bool? isFinished, CancellationToken cancellationToken)
     {
         return GetAllWithDetails()
             .AsNoTracking()
-            .Where(e => employeesIds.Contains(e.EmployeeId) &&
-                  (!isFinished.HasValue || ((bool)isFinished ? e.EvaluationFinishedDate != null : e.EvaluationFinishedDate == null)))
+            .Where(e =>
+                (employeesIds == null || employeesIds.Count == 0 || employeesIds.Contains(e.EmployeeId)) &&
+                (!isFinished.HasValue || (isFinished.Value ? e.EvaluationFinishedDate != null : e.EvaluationFinishedDate == null))
+            )
             .ToListAsync(cancellationToken);
     }
 
@@ -37,6 +39,8 @@ public class EvaluationSessionsRepository : BaseRepository<EvaluationSession>, I
     private IQueryable<EvaluationSession> GetAllWithDetails()
     {
         return _dbSet
+            .Include(e => e.Employee)
+                .ThenInclude(e => e!.Team!)
             .Include(e => e.Employee)
                 .ThenInclude(e => e!.User)
                     .ThenInclude(u => u!.Role)

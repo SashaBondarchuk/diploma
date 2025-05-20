@@ -100,7 +100,7 @@ public static class ModelBuilderExtensions
             entity.HasKey(e => e.Id);
 
             entity.Property(e => e.ReportFile).HasColumnType("varbinary(max)");
-            entity.Property(e => e.WeightedScore).HasColumnType("decimal(5, 4)");
+            entity.Property(e => e.WeightedScore).HasColumnType("decimal(6, 4)");
 
             entity.HasOne(es => es.Employee)
                   .WithMany(e => e.EvaluationSessions)
@@ -140,8 +140,8 @@ public static class ModelBuilderExtensions
             entity.HasKey(e => e.Id);
             entity.HasIndex(e => e.ClassName).IsUnique();
             entity.Property(e => e.ClassName).HasMaxLength(50).IsRequired();
-            entity.Property(e => e.MinScore).HasColumnType("decimal(5, 2)").IsRequired();
-            entity.Property(e => e.MaxScore).HasColumnType("decimal(5, 2)").IsRequired();
+            entity.Property(e => e.MinScore).HasColumnType("decimal(6, 2)").IsRequired();
+            entity.Property(e => e.MaxScore).HasColumnType("decimal(6, 2)").IsRequired();
         });
 
         modelBuilder.Entity<Recommendation>(entity =>

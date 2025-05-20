@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using DinkToPdf;
+using DinkToPdf.Contracts;
 
 namespace Employee.Performance.Evaluator.API.Extensions;
 
@@ -17,6 +19,8 @@ public static class ServiceCollectionExtensions
 {
     public static void AddServices(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
+        
         services.AddScoped<UserStorage>();
         services.AddTransient<IUserIdSetter>(s => s.GetService<UserStorage>()!);
         services.AddTransient<IUserGetter>(s => s.GetService<UserStorage>()!);
@@ -30,6 +34,8 @@ public static class ServiceCollectionExtensions
         services.AddTransient<IEvaluationSessionsService, EvaluationSessionsService>();
         services.AddTransient<IEvaluationsService, EvaluationsService>();
         services.AddTransient<IRecommendationsService, RecommendationsService>();
+        services.AddTransient<IEmployeeClassesService, EmployeeClassesService>();
+        services.AddTransient<IReportsService, ReportsService>();
     }
 
     public static void AddAppDbContext(this IServiceCollection services, IConfiguration configuration)
@@ -55,6 +61,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<IEvaluationSessionsRepository, EvaluationSessionsRepository>();
         services.AddTransient<IEvaluationsRepository, EvaluationsRepository>();
         services.AddTransient<IRecomendationsRepository, RecommendationsRepository>();
+        services.AddTransient<IEmployeeClassesRepository, EmployeeClassesRepository>();
     }
 
     private static void AddAuthServices(this IServiceCollection services, IConfiguration configuration)

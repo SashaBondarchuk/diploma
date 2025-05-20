@@ -1,4 +1,5 @@
-﻿using Employee.Performance.Evaluator.Core.Entities;
+﻿using System.Globalization;
+using Employee.Performance.Evaluator.Core.Entities;
 using Employee.Performance.Evaluator.Infrastructure.Context.Extensions;
 using Microsoft.EntityFrameworkCore;
 using EmployeeEntity = Employee.Performance.Evaluator.Core.Entities.Employee;
@@ -23,6 +24,8 @@ public class AppDbContext : DbContext
     public AppDbContext(DbContextOptions<AppDbContext> options)
         : base(options)
     {
+        CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("en-US");
+        CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo("en-US");
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

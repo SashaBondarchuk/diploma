@@ -12,7 +12,7 @@ import { UserPermission } from '@app/shared/user-permission';
 import {
   AddUpdateEmployeeRequest,
   mapToAddUpdateEmployeeRequest,
-} from '@app/models/requests/add-update-employee.request';
+} from '@app/models/employee.model';
 import { MessageService } from 'primeng/api';
 import { FormBuilder, type FormGroup, Validators } from '@angular/forms';
 import { Team } from '@app/models/team.model';
