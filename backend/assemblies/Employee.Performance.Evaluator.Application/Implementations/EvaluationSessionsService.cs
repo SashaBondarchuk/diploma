@@ -30,10 +30,10 @@ public class EvaluationSessionsService(
             throw new InvalidOperationException($"Employee with Id={employeeId} not found.");
         }
 
-        var isManager = !currentUser.Role!.Permissions.Any(p => p.Id == (int)UserPermission.ManageEvaluations);
-        var teamMembersIds = isManager ? employee.Team!.Employees!.Where(e => e.Id != employee.Id).Select(e => e.Id).ToList() : null;
-        var evaluationSessions = await evaluationSessionsRepository.GetByEmployeesIdsWithDetailsAsync(
-            teamMembersIds, isFinished: false, cancellationToken);
+        var isManager = currentUser.Role!.Permissions.Any(p => p.Id == (int)UserPermission.ManageEvaluations);
+        var teamMembersIds = !isManager ? employee.Team!.Employees!.Where(e => e.Id != employee.Id).Select(e => e.Id).ToList() : null;
+        var evaluationSessions = (await evaluationSessionsRepository.GetByEmployeesIdsWithDetailsAsync(
+            teamMembersIds, isFinished: false, cancellationToken)).Where(s => s.EndDate.UtcDateTime > DateTimeOffset.UtcNow);
 
         var result = new List<EvaluationSessionViewModel>();
 
